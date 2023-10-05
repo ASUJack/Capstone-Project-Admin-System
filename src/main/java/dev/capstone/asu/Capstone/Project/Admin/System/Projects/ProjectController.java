@@ -79,7 +79,6 @@ public class ProjectController {
     public ResponseEntity<List<String>> getAssociatedEmails(@PathVariable("id") Long id) {
         // Fetch the Project object associated with the provided id
         Project project = projectService.findById(id);
-
         List<String> emails = new ArrayList<>();
 
         emails.add(project.getSponsorEmail());
