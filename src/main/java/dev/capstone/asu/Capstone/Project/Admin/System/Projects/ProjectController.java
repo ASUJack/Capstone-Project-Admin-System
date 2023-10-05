@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -72,5 +73,18 @@ public class ProjectController {
     {
         List<Project> projects = projectService.findByYear(year);
         return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAssociatedEmails/{id}")
+    public ResponseEntity<List<String>> getAssociatedEmails(@PathVariable("id") Long id) {
+        // Fetch the Project object associated with the provided id
+        Project project = projectService.findById(id);
+
+        List<String> emails = new ArrayList<>();
+
+        emails.add(project.getSponsorEmail());
+        emails.add(project.getCoordinatorEmail());
+
+        return new ResponseEntity<>(emails, HttpStatus.OK);
     }
 }
