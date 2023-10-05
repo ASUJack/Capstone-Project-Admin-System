@@ -66,4 +66,11 @@ public class ProjectController {
         projectService.deleteProject(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("findByYear/{year}")
+    public ResponseEntity<List<Project>> findByYear(@PathVariable String year)
+    {
+        List<Project> projects = projectService.findByYear(year);
+        return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
 }

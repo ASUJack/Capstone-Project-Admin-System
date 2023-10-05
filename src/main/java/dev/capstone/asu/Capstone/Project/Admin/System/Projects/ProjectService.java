@@ -24,4 +24,9 @@ public class ProjectService {
     }
 
     public void deleteProject(Long id) { projectRepo.deleteById(id); }
+
+    public List<Project> findByYear(String year)
+    {
+        return projectRepo.findAllByYear(year);
+    }
 }
