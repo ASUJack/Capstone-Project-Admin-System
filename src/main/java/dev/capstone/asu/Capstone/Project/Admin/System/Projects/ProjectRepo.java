@@ -14,7 +14,7 @@ public interface ProjectRepo extends JpaRepository<Project, Long>
 
         for(int i = 0; i < allProjects.size(); i++)
         {
-            if(allProjects.get(i).getDuration().equals(year))
+            if(allProjects.get(i).getDuration().contains(year))
             {
                 allFromYear.add(allProjects.get(i));
             }
