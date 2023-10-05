@@ -16,6 +16,6 @@ public class CapstoneProjectAdminSystemApplication {
 	@GetMapping("/hello")
 	public String apiRoot()
 	{
-		return "Hello World";
+		return "Hello World, This is the Backend's website built for testing!";
 	}
 }
