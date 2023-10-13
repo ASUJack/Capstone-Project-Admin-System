@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.util.Arrays;
@@ -119,14 +120,25 @@ public class Project {
     private Long id;
 
     private String name;
+
+    @Column(length = 32)
     private String duration;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
+
     private String sponsorFirstName;
+
     private String sponsorLastName;
+
     private String sponsorEmail;
+
     private String coordinatorFirstName;
+
     private String coordinatorLastName;
+
     private String coordinatorEmail;
+
     private long[] assignedStudents;
 
 }

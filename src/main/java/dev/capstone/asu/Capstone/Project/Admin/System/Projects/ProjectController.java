@@ -1,7 +1,5 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Projects;
 
-import dev.capstone.asu.Capstone.Project.Admin.System.Students.Student;
-import dev.capstone.asu.Capstone.Project.Admin.System.Students.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +74,8 @@ public class ProjectController {
     }
 
     @GetMapping("/getAssociatedEmails/{id}")
-    public ResponseEntity<List<String>> getAssociatedEmails(@PathVariable("id") Long id) {
+    public ResponseEntity<List<String>> getAssociatedEmails(@PathVariable("id") Long id)
+    {
         // Fetch the Project object associated with the provided id
         Project project = projectService.findById(id);
         List<String> emails = new ArrayList<>();
@@ -85,5 +84,15 @@ public class ProjectController {
         emails.add(project.getCoordinatorEmail());
 
         return new ResponseEntity<>(emails, HttpStatus.OK);
+    }
+
+    @PutMapping("/assignStudents/{id}")
+    public ResponseEntity<Project> assignStudents(@PathVariable("id") Long id, @RequestBody Project project)
+    {
+        Project updatedProject = projectService.findById(id);
+        updatedProject.setAssignedStudents(project.getAssignedStudents());
+
+        projectService.addProject(updatedProject);
+        return new ResponseEntity<>(updatedProject, HttpStatus.CREATED);
     }
 }

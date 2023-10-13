@@ -48,6 +48,7 @@ public class StudentController {
         updatedStudent.setFirstName(student.getFirstName());
         updatedStudent.setLastName(student.getLastName());
         updatedStudent.setEmail(student.getEmail());
+        updatedStudent.setSignupTimestamp((student.getSignupTimestamp()));
         updatedStudent.setAsuriteID(student.getAsuriteID());
         updatedStudent.setProjectPreferences(student.getProjectPreferences());
         updatedStudent.setAssignedProject(student.getAssignedProject());

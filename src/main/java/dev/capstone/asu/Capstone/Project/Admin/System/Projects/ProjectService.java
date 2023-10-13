@@ -1,6 +1,5 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Projects;
 
-import dev.capstone.asu.Capstone.Project.Admin.System.Students.StudentNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

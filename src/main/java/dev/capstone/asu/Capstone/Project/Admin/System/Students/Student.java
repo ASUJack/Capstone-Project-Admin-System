@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import lombok.*;
 
 import java.util.Arrays;
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,11 +21,20 @@ public class Student {
     private Long id;
 
     private String firstName;
+
     private String lastName;
+
     private String email;
-    private int asuriteID;
+
+    @Column(length = 64)
+    private String signupTimestamp;
+
+    private long asuriteID;
+
     private long[] projectPreferences;
+
     private long assignedProject;
+
 
     public Long getId() {
         return id;
@@ -41,7 +52,9 @@ public class Student {
         return email;
     }
 
-    public int getAsuriteID() {
+    public String getSignupTimestamp() { return signupTimestamp; }
+
+    public long getAsuriteID() {
         return asuriteID;
     }
 
@@ -65,7 +78,9 @@ public class Student {
         this.email = email;
     }
 
-    public void setAsuriteID(int asuriteID) {
+    public void setSignupTimestamp(String signupTimestamp) { this.signupTimestamp = signupTimestamp; }
+
+    public void setAsuriteID(long asuriteID) {
         this.asuriteID = asuriteID;
     }
 
@@ -84,6 +99,7 @@ public class Student {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", signupTimestamp='" + signupTimestamp + '\'' +
                 ", asuriteID=" + asuriteID +
                 ", projectPreferences=" + Arrays.toString(projectPreferences) +
                 ", assignedProject=" + assignedProject +
