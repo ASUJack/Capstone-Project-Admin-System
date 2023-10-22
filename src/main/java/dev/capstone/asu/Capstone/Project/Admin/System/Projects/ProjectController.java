@@ -44,14 +44,29 @@ public class ProjectController {
     public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project project)
     {
         Project updatedProject = projectService.findById(id);
-        updatedProject.setName(project.getName());
-        updatedProject.setDuration(project.getDuration());
+        updatedProject.setTimestamp(project.getTimestamp());
+        updatedProject.setCohort(project.getCohort());
+        updatedProject.setOrganizationClassification(project.getOrganizationClassification());
+        updatedProject.setIntellectualPropertyConcerns(project.getIntellectualPropertyConcerns());
+        updatedProject.setProjectResourcesProvided(project.getProjectResourcesProvided());
+        updatedProject.setDedicatedContact(project.getDedicatedContact());
+        updatedProject.setProposerOrganization(project.getProposerOrganization());
+        updatedProject.setProposerName(project.getProposerName());
+        updatedProject.setProposerEmail(project.getProposerEmail());
+        updatedProject.setProjectContactName(project.getProjectContactName());
+        updatedProject.setProjectContactEmail(project.getProjectContactEmail());
+        updatedProject.setTitle(project.getTitle());
         updatedProject.setDescription(project.getDescription());
-        updatedProject.setSponsorFirstName(project.getSponsorFirstName());
-        updatedProject.setSponsorLastName(project.getSponsorLastName());
+        updatedProject.setStudentLearningExperience(project.getStudentLearningExperience());
+        updatedProject.setExpectedDeliverables(project.getExpectedDeliverables());
+        updatedProject.setDesiredBackground(project.getDesiredBackground());
+        updatedProject.setProjectFocus(project.getProjectFocus());
+        updatedProject.setMaxTeamSize(project.getMaxTeamSize());
+        updatedProject.setRequiredAgreements(project.getRequiredAgreements());
+        updatedProject.setProjectLinks(project.getProjectLinks());
+        updatedProject.setSponsorName(project.getSponsorName());
         updatedProject.setSponsorEmail(project.getSponsorEmail());
-        updatedProject.setCoordinatorFirstName(project.getCoordinatorFirstName());
-        updatedProject.setCoordinatorLastName(project.getCoordinatorLastName());
+        updatedProject.setCoordinatorName(project.getCoordinatorName());
         updatedProject.setCoordinatorEmail(project.getCoordinatorEmail());
         updatedProject.setAssignedStudents(project.getAssignedStudents());
 
