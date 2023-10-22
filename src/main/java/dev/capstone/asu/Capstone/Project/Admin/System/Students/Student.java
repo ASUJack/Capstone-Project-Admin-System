@@ -29,7 +29,8 @@ public class Student {
     @Column(length = 64)
     private String signupTimestamp;
 
-    private long asuriteID;
+    @Column(length = 16)
+    private String asuriteID;
 
     private long[] projectPreferences;
 
@@ -54,7 +55,7 @@ public class Student {
 
     public String getSignupTimestamp() { return signupTimestamp; }
 
-    public long getAsuriteID() {
+    public String getAsuriteID() {
         return asuriteID;
     }
 
@@ -80,7 +81,7 @@ public class Student {
 
     public void setSignupTimestamp(String signupTimestamp) { this.signupTimestamp = signupTimestamp; }
 
-    public void setAsuriteID(long asuriteID) {
+    public void setAsuriteID(String asuriteID) {
         this.asuriteID = asuriteID;
     }
 
@@ -100,7 +101,7 @@ public class Student {
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", signupTimestamp='" + signupTimestamp + '\'' +
-                ", asuriteID=" + asuriteID +
+                ", asuriteID='" + asuriteID + '\'' +
                 ", projectPreferences=" + Arrays.toString(projectPreferences) +
                 ", assignedProject=" + assignedProject +
                 '}';
