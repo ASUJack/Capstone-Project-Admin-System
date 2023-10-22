@@ -1,5 +1,6 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Projects;
 
+import dev.capstone.asu.Capstone.Project.Admin.System.Students.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,8 +65,6 @@ public class ProjectController {
         updatedProject.setMaxTeamSize(project.getMaxTeamSize());
         updatedProject.setRequiredAgreements(project.getRequiredAgreements());
         updatedProject.setProjectLinks(project.getProjectLinks());
-        updatedProject.setSponsorName(project.getSponsorName());
-        updatedProject.setSponsorEmail(project.getSponsorEmail());
         updatedProject.setCoordinatorName(project.getCoordinatorName());
         updatedProject.setCoordinatorEmail(project.getCoordinatorEmail());
         updatedProject.setAssignedStudents(project.getAssignedStudents());
@@ -95,8 +94,13 @@ public class ProjectController {
         Project project = projectService.findById(id);
         List<String> emails = new ArrayList<>();
 
-        emails.add(project.getSponsorEmail());
+        emails.add(project.getProposerEmail());
         emails.add(project.getCoordinatorEmail());
+
+        for(long ID : project.getAssignedStudents())
+        {
+
+        }
 
         return new ResponseEntity<>(emails, HttpStatus.OK);
     }

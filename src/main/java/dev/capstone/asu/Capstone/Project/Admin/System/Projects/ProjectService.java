@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.Instant;
 
 @Service
 public class ProjectService {
@@ -13,7 +14,11 @@ public class ProjectService {
     @Autowired
     public ProjectService(ProjectRepo projectRepo) { this.projectRepo = projectRepo; }
 
-    public Project addProject(Project project) { return projectRepo.save(project); }
+    public Project addProject(Project project)
+    {
+        project.setTimestamp(Instant.now().toString());
+        return projectRepo.save(project);
+    }
 
     public List<Project> getAllProjects() { return projectRepo.findAll(); }
 

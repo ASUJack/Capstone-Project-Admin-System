@@ -37,8 +37,6 @@ public class Project {
                 ", maxTeamSize=" + maxTeamSize +
                 ", requiredAgreements='" + requiredAgreements + '\'' +
                 ", projectLinks=" + Arrays.toString(projectLinks) +
-                ", sponsorName='" + sponsorName + '\'' +
-                ", sponsorEmail='" + sponsorEmail + '\'' +
                 ", coordinatorName='" + coordinatorName + '\'' +
                 ", coordinatorEmail='" + coordinatorEmail + '\'' +
                 ", assignedStudents=" + Arrays.toString(assignedStudents) +
@@ -213,22 +211,6 @@ public class Project {
         this.projectLinks = projectLinks;
     }
 
-    public String getSponsorName() {
-        return sponsorName;
-    }
-
-    public void setSponsorName(String sponsorName) {
-        this.sponsorName = sponsorName;
-    }
-
-    public String getSponsorEmail() {
-        return sponsorEmail;
-    }
-
-    public void setSponsorEmail(String sponsorEmail) {
-        this.sponsorEmail = sponsorEmail;
-    }
-
     public String getCoordinatorName() {
         return coordinatorName;
     }
@@ -298,10 +280,6 @@ public class Project {
     private String requiredAgreements;
 
     private String[] projectLinks;
-
-    private String sponsorName;
-
-    private String sponsorEmail;
 
     private String coordinatorName;
 
