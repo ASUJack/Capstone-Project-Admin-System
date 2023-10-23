@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +100,34 @@ public class AdminController {
     public void deleteProject(@PathVariable("id") Long id)
     {
         adminService.deleteProject(id);
+    }
+
+
+    //Custom Scripts Below//
+    @GetMapping("/getEmails/{id}")
+    public ResponseEntity<List<String>> getEmails(@PathVariable("id") Long id)
+    {
+        List<String> emails = new ArrayList<>();
+
+        Optional<Project> foundProject = adminService.findProjectById(id);
+        if (foundProject.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
+        else
+        {
+            Project existingProject = foundProject.get();
+            emails.add(existingProject.getCoordinatorEmail());
+            List<Long> assignedStudents = existingProject.getAssignedStudents();
+
+            for (Long assignedStudent : assignedStudents) {
+                Optional<Student> student = adminService.findStudentById(assignedStudent);
+                if (student.isEmpty())
+                    throw new EntityNotFoundException("Student not found with id = " + id.toString());
+                else {
+                    Student existingStudent = student.get();
+                    emails.add(existingStudent.getEmail());
+                }
+            }
+        }
+        return new ResponseEntity<>(emails, HttpStatus.OK);
     }
 
 }
