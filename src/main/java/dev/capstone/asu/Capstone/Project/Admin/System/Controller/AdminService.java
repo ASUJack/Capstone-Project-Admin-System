@@ -93,7 +93,7 @@ public class AdminService {
         updatedProject.setCoordinatorName(project.getCoordinatorName());
         updatedProject.setCoordinatorEmail(project.getCoordinatorEmail());
         updatedProject.setAssignedStudents(project.getAssignedStudents());
-        return Optional.of(updatedProject);
+        return Optional.of(projectRepo.save(updatedProject));
     }
 
     public List<Project> findAllProjects()
