@@ -114,15 +114,16 @@ public class AdminController {
         else
         {
             Project existingProject = foundProject.get();
-            emails.add(existingProject.getCoordinatorEmail());
+            emails.add(existingProject.getProposerEmail());
             List<Long> assignedStudents = existingProject.getAssignedStudents();
 
             for (Long assignedStudent : assignedStudents) {
-                Optional<Student> student = adminService.findStudentById(assignedStudent);
-                if (student.isEmpty())
+                Optional<Student> foundStudent = adminService.findStudentById(assignedStudent);
+                if (foundStudent.isEmpty() && assignedStudent != 0)
                     throw new EntityNotFoundException("Student not found with id = " + id.toString());
-                else {
-                    Student existingStudent = student.get();
+                else if(assignedStudent != 0)
+                {
+                    Student existingStudent = foundStudent.get();
                     emails.add(existingStudent.getEmail());
                 }
             }
