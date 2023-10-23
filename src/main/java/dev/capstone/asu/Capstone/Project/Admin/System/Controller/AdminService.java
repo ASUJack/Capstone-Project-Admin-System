@@ -154,4 +154,9 @@ public class AdminService {
 
         return Optional.of(emails);
     }
+
+    public void assignProjects()
+    {
+
+    }
 }

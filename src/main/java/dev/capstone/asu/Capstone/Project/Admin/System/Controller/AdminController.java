@@ -125,4 +125,11 @@ public class AdminController {
         return new ResponseEntity<>(emails.get(), HttpStatus.OK);
     }
 
+    @PutMapping("/assignProjects")
+    public ResponseEntity<?> assignProjects()
+    {
+        adminService.assignProjects();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
