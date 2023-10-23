@@ -1,14 +1,15 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
-import dev.capstone.asu.Capstone.Project.Admin.System.Entity.Project;
-import dev.capstone.asu.Capstone.Project.Admin.System.Entity.Student;
+import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,8 +156,27 @@ public class AdminService {
         return Optional.of(emails);
     }
 
+    public Optional<Student> projectSignup(Long id, List<Long> projectIds)
+    {
+        Optional<Student> foundStudent = this.findStudentById(id);
+        if (foundStudent.isEmpty()) return foundStudent;
+        Student student = foundStudent.get();
+        student.setProjectPreferences(projectIds);
+        student.setSignupTimestamp(Instant.now());
+        studentRepo.save(student);
+        return Optional.of(student);
+    }
+
     public void assignProjects()
     {
+        List<Student> students = this.findAllStudents();
+        students.sort(new StudentTimestampComparator());
 
+        for (Student student : students)
+        {
+            System.out.println("Student: " + student.toString());
+        }
+
+        studentRepo.saveAll(students);
     }
 }

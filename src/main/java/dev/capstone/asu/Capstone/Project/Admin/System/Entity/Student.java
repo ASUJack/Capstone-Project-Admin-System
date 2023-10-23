@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,8 +27,7 @@ public class Student {
 
     private String email;
 
-    @Column(length = 64)
-    private String signupTimestamp;
+    private Instant signupTimestamp;
 
     private List<Long> projectPreferences;
 
@@ -47,7 +47,7 @@ public class Student {
         return email;
     }
 
-    public String getSignupTimestamp() { return signupTimestamp; }
+    public Instant getSignupTimestamp() { return signupTimestamp; }
 
     public String getAsuriteID() {
         return asuriteID;
@@ -73,7 +73,7 @@ public class Student {
         this.email = email;
     }
 
-    public void setSignupTimestamp(String signupTimestamp) { this.signupTimestamp = signupTimestamp; }
+    public void setSignupTimestamp(Instant signupTimestamp) { this.signupTimestamp = signupTimestamp; }
 
     public void setAsuriteID(String asuriteID) {
         this.asuriteID = asuriteID;

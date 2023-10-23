@@ -125,6 +125,14 @@ public class AdminController {
         return new ResponseEntity<>(emails.get(), HttpStatus.OK);
     }
 
+    @PutMapping("/projectSignup/{id}")
+    public ResponseEntity<?> projectSignup(@PathVariable("id") Long id, @RequestBody List<Long> projectIds)
+    {
+        Optional<Student> foundStudent = adminService.projectSignup(id, projectIds);
+        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PutMapping("/assignProjects")
     public ResponseEntity<?> assignProjects()
     {
