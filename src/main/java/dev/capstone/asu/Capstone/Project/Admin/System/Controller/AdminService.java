@@ -4,9 +4,11 @@ import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
 import jakarta.annotation.Nullable;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,6 +144,22 @@ public class AdminService {
 
     public void deleteProject(Long id)
     {
+        Optional<Project> toDelete = projectRepo.findById(id);
+        if(toDelete.isPresent())
+        {
+            Project project = toDelete.get();
+            List<Long> AssignedStudents = project.getAssignedStudents();
+
+            for(Long studentID : AssignedStudents)
+            {
+                Optional<Student> toUpdate = studentRepo.findById(studentID);
+                if(toUpdate.isPresent())
+                {
+                    Student student = toUpdate.get();
+                    student.setAssignedProject(0L);
+                }
+            }
+        }
         projectRepo.deleteById(id);
     }
 
