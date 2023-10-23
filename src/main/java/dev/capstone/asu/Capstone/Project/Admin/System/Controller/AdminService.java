@@ -64,6 +64,23 @@ public class AdminService {
 
     public void deleteStudent(Long id)
     {
+        Optional<Student> toDelete = studentRepo.findById(id);
+        Long assignedProjectID;
+        if(toDelete.isPresent()) {
+            Student student = toDelete.get();
+            assignedProjectID = student.getAssignedProject();
+
+            if(assignedProjectID != 0) {
+                Optional<Project> toUpdate = projectRepo.findById(assignedProjectID);
+
+                if (toUpdate.isPresent()) {
+                    Project project = toUpdate.get();
+                    List<Long> assignedStudents = project.getAssignedStudents();
+                    assignedStudents.remove(id);
+                    project.setAssignedStudents(assignedStudents);
+                }
+            }
+        }
         studentRepo.deleteById(id);
     }
 
