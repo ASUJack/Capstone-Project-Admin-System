@@ -115,6 +115,8 @@ public class AdminController {
         {
             Project existingProject = foundProject.get();
             emails.add(existingProject.getProposerEmail());
+            emails.add(existingProject.getCoordinatorEmail());
+            emails.add(existingProject.getProjectContactEmail());
             List<Long> assignedStudents = existingProject.getAssignedStudents();
 
             for (Long assignedStudent : assignedStudents) {
