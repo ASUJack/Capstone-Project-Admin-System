@@ -8,6 +8,7 @@ import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,11 @@ public class AdminService {
         this.projectRepo = projectRepo;
         this.studentRepo = studentRepo;
     }
+
+
+    // =====================================================
+    //  STUDENT METHODS
+    // =====================================================
 
     public Student addStudent(Student student)
     {
@@ -59,6 +65,11 @@ public class AdminService {
     {
         studentRepo.deleteById(id);
     }
+
+
+    // =====================================================
+    //  PROJECT METHODS
+    // =====================================================
 
     public Project addProject(Project project)
     {
@@ -114,5 +125,33 @@ public class AdminService {
     public void deleteProject(Long id)
     {
         projectRepo.deleteById(id);
+    }
+
+
+    // =====================================================
+    //  SCRIPT METHODS
+    // =====================================================
+
+
+    public Optional<List<String>> getEmailsByProject(Long id)
+    {
+        Optional<Project> foundProject = this.findProjectById(id);
+        if (foundProject.isEmpty()) return Optional.empty();
+
+        Project project = foundProject.get();
+        List<String> emails = new ArrayList<>();
+
+        emails.add(project.getProposerEmail());
+        emails.add(project.getProjectContactEmail());
+        emails.add(project.getCoordinatorEmail());
+
+        List<Long> assignedStudents = project.getAssignedStudents();
+        for(Long assignedStudent : assignedStudents)
+        {
+            Optional<Student> student = this.findStudentById(assignedStudent);
+            student.ifPresent(value -> emails.add(value.getEmail()));
+        }
+
+        return Optional.of(emails);
     }
 }

@@ -22,6 +22,11 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+
+    // =====================================================
+    //  STUDENT METHODS
+    // =====================================================
+
     @GetMapping("/allStudents")
     public ResponseEntity<List<Student>> findAllStudents()
     {
@@ -58,6 +63,11 @@ public class AdminController {
         adminService.deleteStudent(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
+    // =====================================================
+    //  PROJECT METHODS
+    // =====================================================
 
     @PostMapping("/addProject")
     public ResponseEntity<Project> addProject(@RequestBody Project project)
@@ -103,34 +113,16 @@ public class AdminController {
     }
 
 
-    //Custom Scripts Below//
+    // =====================================================
+    //  SCRIPT METHODS
+    // =====================================================
+
     @GetMapping("/getEmails/{id}")
     public ResponseEntity<List<String>> getEmails(@PathVariable("id") Long id)
     {
-        List<String> emails = new ArrayList<>();
-
-        Optional<Project> foundProject = adminService.findProjectById(id);
-        if (foundProject.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
-        else
-        {
-            Project existingProject = foundProject.get();
-            emails.add(existingProject.getProposerEmail());
-            emails.add(existingProject.getCoordinatorEmail());
-            emails.add(existingProject.getProjectContactEmail());
-            List<Long> assignedStudents = existingProject.getAssignedStudents();
-
-            for (Long assignedStudent : assignedStudents) {
-                Optional<Student> foundStudent = adminService.findStudentById(assignedStudent);
-                if (foundStudent.isEmpty() && assignedStudent != 0)
-                    throw new EntityNotFoundException("Student not found with id = " + id.toString());
-                else if(assignedStudent != 0)
-                {
-                    Student existingStudent = foundStudent.get();
-                    emails.add(existingStudent.getEmail());
-                }
-            }
-        }
-        return new ResponseEntity<>(emails, HttpStatus.OK);
+        Optional<List<String>> emails = adminService.getEmailsByProject(id);
+        if (emails.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
+        return new ResponseEntity<>(emails.get(), HttpStatus.OK);
     }
 
 }
