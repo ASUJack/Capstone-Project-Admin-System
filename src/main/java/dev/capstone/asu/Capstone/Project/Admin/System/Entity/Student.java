@@ -31,9 +31,7 @@ public class Student {
 
     private List<Long> projectPreferences;
 
-    @OneToOne(targetEntity = Project.class)
-    @JoinColumn(name = "project_id", referencedColumnName = "id")
-    private Project assignedProject;
+    private Long assignedProject;
 
     public Long getId() { return id; }
 
@@ -59,7 +57,7 @@ public class Student {
         return projectPreferences;
     }
 
-    public Project getAssignedProject() {
+    public Long getAssignedProject() {
         return assignedProject;
     }
 
@@ -85,7 +83,7 @@ public class Student {
         this.projectPreferences = projectPreferences;
     }
 
-    public void setAssignedProject(Project assignedProject) {
+    public void setAssignedProject(Long assignedProject) {
         this.assignedProject = assignedProject;
     }
 

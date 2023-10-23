@@ -88,6 +88,13 @@ public class AdminController {
         return new ResponseEntity<>(foundProject.get(), HttpStatus.OK);
     }
 
+    @GetMapping("/projectsByYear/{year}")
+    public ResponseEntity<List<Project>> findProjectsByYear(@PathVariable("year") String year)
+    {
+        List<Project> projects = adminService.findProjectsByYear(year);
+        return new ResponseEntity<>(projects, HttpStatus.OK);
+    }
+
     @DeleteMapping("/deleteProject/{id}")
     public void deleteProject(@PathVariable("id") Long id)
     {

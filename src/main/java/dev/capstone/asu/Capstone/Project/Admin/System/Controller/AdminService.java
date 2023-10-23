@@ -106,7 +106,7 @@ public class AdminService {
         return projectRepo.findById(id);
     }
 
-    public List<Project> findProjectByYear(String year)
+    public List<Project> findProjectsByYear(String year)
     {
         return projectRepo.findAllByYear(year);
     }

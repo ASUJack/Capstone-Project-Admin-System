@@ -190,11 +190,11 @@ public class Project {
         this.coordinatorEmail = coordinatorEmail;
     }
 
-    public List<Student> getAssignedStudents() {
+    public List<Long> getAssignedStudents() {
         return assignedStudents;
     }
 
-    public void setAssignedStudents(List<Student> assignedStudents) {
+    public void setAssignedStudents(List<Long> assignedStudents) {
         this.assignedStudents = assignedStudents;
     }
 
@@ -253,9 +253,7 @@ public class Project {
 
     private String coordinatorEmail;
 
-    @OneToMany(targetEntity = Student.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "student_id", referencedColumnName = "id")
-    private List<Student> assignedStudents;
+    private List<Long> assignedStudents;
 
     @Override
     public String toString() {
