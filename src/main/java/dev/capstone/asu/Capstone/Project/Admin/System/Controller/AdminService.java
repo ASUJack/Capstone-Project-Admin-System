@@ -52,7 +52,7 @@ public class AdminService {
         updatedStudent.setSignupTimestamp(student.getSignupTimestamp());
         updatedStudent.setProjectPreferences(student.getProjectPreferences());
         updatedStudent.setAssignedProject(student.getAssignedProject());
-        return Optional.of(updatedStudent);
+        return Optional.of(studentRepo.save(updatedStudent));
     }
 
     public void deleteStudent(Long id)
