@@ -1,5 +1,6 @@
-package dev.capstone.asu.Capstone.Project.Admin.System.Projects;
+package dev.capstone.asu.Capstone.Project.Admin.System.Repository;
 
+import dev.capstone.asu.Capstone.Project.Admin.System.Entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.ArrayList;

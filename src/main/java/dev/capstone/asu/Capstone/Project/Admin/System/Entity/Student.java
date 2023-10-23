@@ -1,15 +1,12 @@
-package dev.capstone.asu.Capstone.Project.Admin.System.Students;
+package dev.capstone.asu.Capstone.Project.Admin.System.Entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
-import java.time.Instant;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +17,9 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 16, unique = true)
+    private String asuriteID;
+
     private String firstName;
 
     private String lastName;
@@ -29,17 +29,13 @@ public class Student {
     @Column(length = 64)
     private String signupTimestamp;
 
-    @Column(length = 16)
-    private String asuriteID;
+    private List<Long> projectPreferences;
 
-    private long[] projectPreferences;
+    @OneToOne(targetEntity = Project.class)
+    @JoinColumn(name = "project_id", referencedColumnName = "id")
+    private Project assignedProject;
 
-    private long assignedProject;
-
-
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public String getFirstName() {
         return firstName;
@@ -59,11 +55,11 @@ public class Student {
         return asuriteID;
     }
 
-    public long[] getProjectPreferences() {
+    public List<Long> getProjectPreferences() {
         return projectPreferences;
     }
 
-    public long getAssignedProject() {
+    public Project getAssignedProject() {
         return assignedProject;
     }
 
@@ -85,11 +81,11 @@ public class Student {
         this.asuriteID = asuriteID;
     }
 
-    public void setProjectPreferences(long[] projectPreferences) {
+    public void setProjectPreferences(List<Long> projectPreferences) {
         this.projectPreferences = projectPreferences;
     }
 
-    public void setAssignedProject(long assignedProject) {
+    public void setAssignedProject(Project assignedProject) {
         this.assignedProject = assignedProject;
     }
 
@@ -97,12 +93,12 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id=" + id +
+                ", asuriteID='" + asuriteID + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", signupTimestamp='" + signupTimestamp + '\'' +
-                ", asuriteID='" + asuriteID + '\'' +
-                ", projectPreferences=" + Arrays.toString(projectPreferences) +
+                ", projectPreferences=" + projectPreferences +
                 ", assignedProject=" + assignedProject +
                 '}';
     }

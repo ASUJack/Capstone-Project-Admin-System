@@ -1,55 +1,18 @@
-package dev.capstone.asu.Capstone.Project.Admin.System.Projects;
+package dev.capstone.asu.Capstone.Project.Admin.System.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 public class Project {
-    @Override
-    public String toString() {
-        return "Project{" +
-                "id=" + id +
-                ", timestamp='" + timestamp + '\'' +
-                ", cohort='" + cohort + '\'' +
-                ", organizationClassification='" + organizationClassification + '\'' +
-                ", intellectualPropertyConcerns='" + intellectualPropertyConcerns + '\'' +
-                ", projectResourcesProvided='" + projectResourcesProvided + '\'' +
-                ", dedicatedContact='" + dedicatedContact + '\'' +
-                ", proposerOrganization='" + proposerOrganization + '\'' +
-                ", proposerName='" + proposerName + '\'' +
-                ", proposerEmail='" + proposerEmail + '\'' +
-                ", projectContactName='" + projectContactName + '\'' +
-                ", projectContactEmail='" + projectContactEmail + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", studentLearningExperience='" + studentLearningExperience + '\'' +
-                ", expectedDeliverables='" + expectedDeliverables + '\'' +
-                ", desiredBackground='" + desiredBackground + '\'' +
-                ", projectFocus='" + projectFocus + '\'' +
-                ", maxTeamSize=" + maxTeamSize +
-                ", requiredAgreements='" + requiredAgreements + '\'' +
-                ", projectLinks=" + Arrays.toString(projectLinks) +
-                ", coordinatorName='" + coordinatorName + '\'' +
-                ", coordinatorEmail='" + coordinatorEmail + '\'' +
-                ", assignedStudents=" + Arrays.toString(assignedStudents) +
-                '}';
-    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public String getTimestamp() {
         return timestamp;
@@ -203,11 +166,11 @@ public class Project {
         this.requiredAgreements = requiredAgreements;
     }
 
-    public String[] getProjectLinks() {
+    public List<String> getProjectLinks() {
         return projectLinks;
     }
 
-    public void setProjectLinks(String[] projectLinks) {
+    public void setProjectLinks(List<String> projectLinks) {
         this.projectLinks = projectLinks;
     }
 
@@ -227,13 +190,20 @@ public class Project {
         this.coordinatorEmail = coordinatorEmail;
     }
 
-    public long[] getAssignedStudents() {
+    public List<Student> getAssignedStudents() {
         return assignedStudents;
     }
 
-    public void setAssignedStudents(long[] assignedStudents) {
+    public void setAssignedStudents(List<Student> assignedStudents) {
         this.assignedStudents = assignedStudents;
     }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
+    private String title;
 
     private String timestamp;
 
@@ -257,8 +227,6 @@ public class Project {
 
     private String projectContactEmail;
 
-    private String title;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -279,12 +247,43 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String requiredAgreements;
 
-    private String[] projectLinks;
+    private List<String> projectLinks;
 
     private String coordinatorName;
 
     private String coordinatorEmail;
 
-    private long[] assignedStudents;
+    @OneToMany(targetEntity = Student.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    private List<Student> assignedStudents;
 
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", cohort='" + cohort + '\'' +
+                ", organizationClassification='" + organizationClassification + '\'' +
+                ", intellectualPropertyConcerns='" + intellectualPropertyConcerns + '\'' +
+                ", projectResourcesProvided='" + projectResourcesProvided + '\'' +
+                ", dedicatedContact='" + dedicatedContact + '\'' +
+                ", proposerOrganization='" + proposerOrganization + '\'' +
+                ", proposerName='" + proposerName + '\'' +
+                ", proposerEmail='" + proposerEmail + '\'' +
+                ", projectContactName='" + projectContactName + '\'' +
+                ", projectContactEmail='" + projectContactEmail + '\'' +
+                ", description='" + description + '\'' +
+                ", studentLearningExperience='" + studentLearningExperience + '\'' +
+                ", expectedDeliverables='" + expectedDeliverables + '\'' +
+                ", desiredBackground='" + desiredBackground + '\'' +
+                ", projectFocus='" + projectFocus + '\'' +
+                ", maxTeamSize=" + maxTeamSize +
+                ", requiredAgreements='" + requiredAgreements + '\'' +
+                ", projectLinks=" + projectLinks +
+                ", coordinatorName='" + coordinatorName + '\'' +
+                ", coordinatorEmail='" + coordinatorEmail + '\'' +
+                ", assignedStudents=" + assignedStudents +
+                '}';
+    }
 }
