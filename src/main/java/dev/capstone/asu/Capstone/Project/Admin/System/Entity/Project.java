@@ -198,6 +198,16 @@ public class Project {
         this.assignedStudents = assignedStudents;
     }
 
+    public boolean addAssignedStudent(Long studentId)
+    {
+        return this.assignedStudents.add(studentId);
+    }
+
+    public boolean atCapacity()
+    {
+        return (assignedStudents.size() >= maxTeamSize);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

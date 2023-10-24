@@ -140,4 +140,11 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping("/clearAssignedProjects")
+    public ResponseEntity<?> clearAssignedProjects()
+    {
+        adminService.clearAssignedProjects();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

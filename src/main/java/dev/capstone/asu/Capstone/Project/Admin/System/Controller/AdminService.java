@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AdminService {
@@ -204,14 +201,131 @@ public class AdminService {
 
     public void assignProjects()
     {
-        List<Student> students = this.findAllStudents();
-        students.sort(new StudentTimestampComparator());
+        // Fetch and sort all student objects, fetch project objects
+        ArrayList<Student> allStudents = new ArrayList<>(this.findAllStudents());
+        allStudents.sort(new StudentTimestampComparator());
+        ArrayList<Project> allProjects = new ArrayList<>(this.findAllProjects());
 
-        for (Student student : students)
+        // Temporary storage
+        List<Student> unassignedStudents = new ArrayList<>();
+        List<Student> assignedStudents = new ArrayList<>();
+        List<Project> fullProjects = new ArrayList<>();
+
+        // Temporary variables
+        Project tempProject;
+        Student tempStudent;
+
+        // Print all sorted student objects to standard output
+        for (Student student : allStudents)
         {
             System.out.println("Student: " + student.toString());
         }
 
-        studentRepo.saveAll(students);
+        // Assign all students with a signup timestamp
+        while (!allStudents.isEmpty() && !allProjects.isEmpty())
+        {
+            // If no signup timestamp, move to unassigned array
+            tempStudent = allStudents.get(0);
+            if (Objects.isNull(tempStudent.getSignupTimestamp()))
+            {
+                unassignedStudents.add(tempStudent);
+                allStudents.remove(tempStudent);
+                continue;
+            }
+
+            // Search project preferences for first available project
+            for (Long projectId : tempStudent.getProjectPreferences())
+            {
+                tempProject = null;
+                for (Project p : allProjects)
+                {
+                    if (projectId.equals(p.getId()))
+                    {
+                        tempProject = p;
+                        break;
+                    }
+                }
+                if (Objects.isNull(tempProject)) continue;
+                if (!tempProject.atCapacity())
+                {
+                    tempProject.addAssignedStudent(tempStudent.getId());
+                    tempStudent.setAssignedProject(projectId);
+                    assignedStudents.add(tempStudent);
+                    allStudents.remove(tempStudent);
+                    if (tempProject.atCapacity())
+                    {
+                        fullProjects.add(tempProject);
+                        allProjects.remove(tempProject);
+                    }
+                    break;
+                }
+            }
+
+            // If no preferred project available, move to unassigned array
+            if (allStudents.contains(tempStudent))
+            {
+                unassignedStudents.add(tempStudent);
+                allStudents.remove(tempStudent);
+            }
+        }
+
+        // If there are no more available projects, move remaining students to unassigned array
+        unassignedStudents.addAll(allStudents);
+        System.out.println("After assigning students with timestamps:");
+        for (Student s : unassignedStudents)
+        {
+            System.out.println("Unassigned Student: " + s.toString());
+        }
+        allStudents.clear();
+
+        // Assign all remaining students with no timestamp
+        //  or with no available preferred projects
+        while (!unassignedStudents.isEmpty() && !allProjects.isEmpty())
+        {
+            tempStudent = unassignedStudents.get(0);
+            tempProject = allProjects.get(0);
+
+            // Find first available project
+            if (tempProject.atCapacity())
+            {
+                fullProjects.add(tempProject);
+                allProjects.remove(tempProject);
+                continue;
+            }
+
+            tempProject.addAssignedStudent(tempStudent.getId());
+            tempStudent.setAssignedProject(tempProject.getId());
+            assignedStudents.add(tempStudent);
+            unassignedStudents.remove(tempStudent);
+        }
+
+        // Merge all temporary storage back into original arrays
+        allStudents.addAll(assignedStudents);
+        allStudents.addAll(unassignedStudents);
+        allProjects.addAll(fullProjects);
+
+        // Write changes to database
+        studentRepo.saveAll(allStudents);
+        projectRepo.saveAll(allProjects);
     }
+
+    public void clearAssignedProjects()
+    {
+        List<Student> students = studentRepo.findAll();
+        List<Project> projects = projectRepo.findAll();
+
+        for (Student student : students)
+        {
+            student.setAssignedProject(0L);
+        }
+
+        for (Project project : projects)
+        {
+            project.setAssignedStudents(new ArrayList<Long>());
+        }
+
+        studentRepo.saveAll(students);
+        projectRepo.saveAll(projects);
+    }
+
 }
