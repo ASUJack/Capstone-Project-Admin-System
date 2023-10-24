@@ -1,17 +1,12 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
 import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
-import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiRequestError;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
 
-import javax.swing.text.html.Option;
 import java.time.Instant;
 import java.util.*;
 
@@ -44,17 +39,22 @@ public class AdminService {
         return studentRepo.findAll();
     }
 
-    public Optional<Student> findStudentById(Long id)
+    public Student findStudentById(Long id)
     {
-        return studentRepo.findById(id);
+        Optional<Student> foundStudent = studentRepo.findById(id);
+        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
+        return foundStudent.get();
     }
 
     public Student updateStudent(Long id, Student student)
     {
-        Optional<Student> foundStudent = this.findStudentById(id);
-        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
-        Student updatedStudent = foundStudent.get();
-        if (!updatedStudent.getId().equals(student.getId())) throw new InputMismatchException("Path variable id does not match provided student object id");
+        Student foundStudent = this.findStudentById(id);
+        if (!foundStudent.getId().equals(student.getId()))
+            throw new InputMismatchException("Path variable id = '"
+                    + id.toString()
+                    + "' does not match student object id = '"
+                    + student.getId().toString()
+                    + "'");
         return studentRepo.save(student);
     }
 
@@ -90,35 +90,16 @@ public class AdminService {
         return projectRepo.save(project);
     }
 
-    public Optional<Project> updateProject(Long id, Project project)
+    public Project updateProject(Long id, Project project)
     {
-        Optional<Project> foundProject = this.findProjectById(id);
-        if (foundProject.isEmpty()) return foundProject;
-        Project updatedProject = foundProject.get();
-        updatedProject.setTimestamp(project.getTimestamp());
-        updatedProject.setCohort(project.getCohort());
-        updatedProject.setOrganizationClassification(project.getOrganizationClassification());
-        updatedProject.setIntellectualPropertyConcerns(project.getIntellectualPropertyConcerns());
-        updatedProject.setProjectResourcesProvided(project.getProjectResourcesProvided());
-        updatedProject.setDedicatedContact(project.getDedicatedContact());
-        updatedProject.setProposerOrganization(project.getProposerOrganization());
-        updatedProject.setProposerName(project.getProposerName());
-        updatedProject.setProposerEmail(project.getProposerEmail());
-        updatedProject.setProjectContactName(project.getProjectContactName());
-        updatedProject.setProjectContactEmail(project.getProjectContactEmail());
-        updatedProject.setTitle(project.getTitle());
-        updatedProject.setDescription(project.getDescription());
-        updatedProject.setStudentLearningExperience(project.getStudentLearningExperience());
-        updatedProject.setExpectedDeliverables(project.getExpectedDeliverables());
-        updatedProject.setDesiredBackground(project.getDesiredBackground());
-        updatedProject.setProjectFocus(project.getProjectFocus());
-        updatedProject.setMaxTeamSize(project.getMaxTeamSize());
-        updatedProject.setRequiredAgreements(project.getRequiredAgreements());
-        updatedProject.setProjectLinks(project.getProjectLinks());
-        updatedProject.setCoordinatorName(project.getCoordinatorName());
-        updatedProject.setCoordinatorEmail(project.getCoordinatorEmail());
-        updatedProject.setAssignedStudents(project.getAssignedStudents());
-        return Optional.of(projectRepo.save(updatedProject));
+        Project foundProject = this.findProjectById(id);
+        if (!foundProject.getId().equals(project.getId()))
+            throw new InputMismatchException("Path variable id = '"
+                    + id.toString()
+                    + "' does not match project object id = '"
+                    + project.getId().toString()
+                    + "'");
+        return projectRepo.save(project);
     }
 
     public List<Project> findAllProjects()
@@ -126,9 +107,11 @@ public class AdminService {
         return projectRepo.findAll();
     }
 
-    public Optional<Project> findProjectById(Long id)
+    public Project findProjectById(Long id)
     {
-        return projectRepo.findById(id);
+        Optional<Project> foundProject = projectRepo.findById(id);
+        if (foundProject.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
+        return foundProject.get();
     }
 
     public List<Project> findProjectsByYear(String year)
@@ -163,37 +146,44 @@ public class AdminService {
     // =====================================================
 
 
-    public Optional<List<String>> getEmailsByProject(Long id)
+    public List<String> getEmailsByProject(Long id)
     {
-        Optional<Project> foundProject = this.findProjectById(id);
-        if (foundProject.isEmpty()) return Optional.empty();
+        Project foundProject = this.findProjectById(id);
 
-        Project project = foundProject.get();
         List<String> emails = new ArrayList<>();
 
-        emails.add(project.getProposerEmail());
-        emails.add(project.getProjectContactEmail());
-        emails.add(project.getCoordinatorEmail());
+        emails.add(foundProject.getProposerEmail());
+        emails.add(foundProject.getProjectContactEmail());
+        emails.add(foundProject.getCoordinatorEmail());
 
-        List<Long> assignedStudents = project.getAssignedStudents();
+        List<Long> assignedStudents = foundProject.getAssignedStudents();
+        Student tempStudent;
         for(Long assignedStudent : assignedStudents)
         {
-            Optional<Student> student = this.findStudentById(assignedStudent);
-            student.ifPresent(value -> emails.add(value.getEmail()));
+            tempStudent = null;
+            try
+            {
+                tempStudent = this.findStudentById(assignedStudent);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                System.out.println(ex.getMessage());
+            }
+            if (!Objects.isNull(tempStudent))
+            {
+                emails.add(tempStudent.getEmail());
+            }
         }
 
-        return Optional.of(emails);
+        return emails;
     }
 
-    public Optional<Student> projectSignup(Long id, List<Long> projectIds)
+    public Student projectSignup(Long id, List<Long> projectIds)
     {
-        Optional<Student> foundStudent = this.findStudentById(id);
-        if (foundStudent.isEmpty()) return foundStudent;
-        Student student = foundStudent.get();
-        student.setProjectPreferences(projectIds);
-        student.setSignupTimestamp(Instant.now());
-        studentRepo.save(student);
-        return Optional.of(student);
+        Student foundStudent = this.findStudentById(id);
+        foundStudent.setProjectPreferences(projectIds);
+        foundStudent.setSignupTimestamp(Instant.now());
+        return studentRepo.save(foundStudent);
     }
 
     public void assignProjects()

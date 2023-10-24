@@ -38,9 +38,8 @@ public class AdminController {
     @GetMapping("/findStudent/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable("id") Long id)
     {
-        Optional<Student> student = adminService.findStudentById(id);
-        if (student.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
-        return new ResponseEntity<>(student.get(), HttpStatus.OK);
+        Student student = adminService.findStudentById(id);
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
     @PostMapping("/addStudent")
@@ -85,17 +84,15 @@ public class AdminController {
     @GetMapping("/findProject/{id}")
     public ResponseEntity<Project> findProjectById(@PathVariable("id") Long id)
     {
-        Optional<Project> foundProject = adminService.findProjectById(id);
-        if (foundProject.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
-        return new ResponseEntity<>(foundProject.get(), HttpStatus.OK);
+        Project foundProject = adminService.findProjectById(id);
+        return new ResponseEntity<>(foundProject, HttpStatus.OK);
     }
 
     @PutMapping("/updateProject/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project project)
     {
-        Optional<Project> foundProject = adminService.updateProject(id, project);
-        if (foundProject.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
-        return new ResponseEntity<>(foundProject.get(), HttpStatus.OK);
+        Project foundProject = adminService.updateProject(id, project);
+        return new ResponseEntity<>(foundProject, HttpStatus.OK);
     }
 
     @GetMapping("/projectsByYear/{year}")
@@ -119,17 +116,15 @@ public class AdminController {
     @GetMapping("/getEmails/{id}")
     public ResponseEntity<List<String>> getEmails(@PathVariable("id") Long id)
     {
-        Optional<List<String>> emails = adminService.getEmailsByProject(id);
-        if (emails.isEmpty()) throw new EntityNotFoundException("Project not found with id = " + id.toString());
-        return new ResponseEntity<>(emails.get(), HttpStatus.OK);
+        List<String> emails = adminService.getEmailsByProject(id);
+        return new ResponseEntity<>(emails, HttpStatus.OK);
     }
 
     @PutMapping("/projectSignup/{id}")
-    public ResponseEntity<?> projectSignup(@PathVariable("id") Long id, @RequestBody List<Long> projectIds)
+    public ResponseEntity<Student> projectSignup(@PathVariable("id") Long id, @RequestBody List<Long> projectIds)
     {
-        Optional<Student> foundStudent = adminService.projectSignup(id, projectIds);
-        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
-        return new ResponseEntity<>(HttpStatus.OK);
+        Student foundStudent = adminService.projectSignup(id, projectIds);
+        return new ResponseEntity<>(foundStudent, HttpStatus.OK);
     }
 
     @PutMapping("/assignProjects")
