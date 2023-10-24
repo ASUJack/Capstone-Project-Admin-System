@@ -3,6 +3,7 @@ package dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminApiError {
@@ -32,6 +33,22 @@ public class AdminApiError {
         this.timestamp = Instant.now().toString();
         this.message = message;
         this.debugMessage = ex.getLocalizedMessage();
+    }
+
+    public AdminApiError(HttpStatus status, Throwable ex, List<AdminApiSubError> subErrors)
+    {
+        this.status = status;
+        this.timestamp = Instant.now().toString();
+        this.message = ex.getMessage();
+        this.debugMessage = ex.getLocalizedMessage();
+        this.subErrors = subErrors;
+    }
+
+    public AdminApiError(HttpStatus status, String message, List<AdminApiSubError> subErrors)
+    {
+        this.status = status;
+        this.message = message;
+        this.subErrors = subErrors;
     }
 
     public AdminApiError(HttpStatus status, String message, Throwable ex, List<AdminApiSubError> subErrors)

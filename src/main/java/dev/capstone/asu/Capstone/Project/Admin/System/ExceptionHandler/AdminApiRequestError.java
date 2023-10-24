@@ -1,21 +1,21 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@Data
-@EqualsAndHashCode(callSuper = false)
-@AllArgsConstructor
-public class AdminApiValidationError extends AdminApiSubError{
+public class AdminApiRequestError extends AdminApiSubError {
     private String object;
     private String field;
-    private Object rejectedValue;
+    private Object pathVariable;
     private String message;
 
-    public AdminApiValidationError(String object, String message)
+    public AdminApiRequestError(String message)
+    {
+        this.message = message;
+    }
+
+    public AdminApiRequestError(String object, String field, Object pathVariable, String message)
     {
         this.object = object;
+        this.field = field;
+        this.pathVariable = pathVariable;
         this.message = message;
     }
 
@@ -35,12 +35,12 @@ public class AdminApiValidationError extends AdminApiSubError{
         this.field = field;
     }
 
-    public Object getRejectedValue() {
-        return rejectedValue;
+    public Object getPathVariable() {
+        return pathVariable;
     }
 
-    public void setRejectedValue(Object rejectedValue) {
-        this.rejectedValue = rejectedValue;
+    public void setPathVariable(Object pathVariable) {
+        this.pathVariable = pathVariable;
     }
 
     public String getMessage() {

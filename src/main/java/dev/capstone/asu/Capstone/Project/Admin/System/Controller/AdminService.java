@@ -1,12 +1,15 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
 import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
+import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiRequestError;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.poi.sl.draw.geom.GuideIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 
 import javax.swing.text.html.Option;
 import java.time.Instant;
@@ -46,19 +49,13 @@ public class AdminService {
         return studentRepo.findById(id);
     }
 
-    public Optional<Student> updateStudent(Long id, Student student)
+    public Student updateStudent(Long id, Student student)
     {
         Optional<Student> foundStudent = this.findStudentById(id);
-        if (foundStudent.isEmpty()) return foundStudent;
+        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
         Student updatedStudent = foundStudent.get();
-        updatedStudent.setAsuriteID(student.getAsuriteID());
-        updatedStudent.setFirstName(student.getFirstName());
-        updatedStudent.setLastName(student.getLastName());
-        updatedStudent.setEmail(student.getEmail());
-        updatedStudent.setSignupTimestamp(student.getSignupTimestamp());
-        updatedStudent.setProjectPreferences(student.getProjectPreferences());
-        updatedStudent.setAssignedProject(student.getAssignedProject());
-        return Optional.of(studentRepo.save(updatedStudent));
+        if (!updatedStudent.getId().equals(student.getId())) throw new InputMismatchException("Path variable id does not match provided student object id");
+        return studentRepo.save(student);
     }
 
     public void deleteStudent(Long id)

@@ -18,12 +18,14 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16, unique = true)
-    private String asuriteID;
+    private Long studentID;
 
     private String firstName;
 
     private String lastName;
+
+    @Column(length = 16, unique = true)
+    private String asuriteID;
 
     private String email;
 
@@ -33,54 +35,68 @@ public class Student {
 
     private Long assignedProject;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
+
+    public Long getStudentID() {
+        return studentID;
+    }
+
+    public void setStudentID(Long studentID) {
+        this.studentID = studentID;
+    }
 
     public String getFirstName() {
         return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Instant getSignupTimestamp() { return signupTimestamp; }
-
-    public String getAsuriteID() {
-        return asuriteID;
-    }
-
-    public List<Long> getProjectPreferences() {
-        return projectPreferences;
-    }
-
-    public Long getAssignedProject() {
-        return assignedProject;
     }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    public String getLastName() {
+        return lastName;
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getAsuriteID() {
+        return asuriteID;
+    }
+
+    public void setAsuriteID(String asuriteID) {
+        this.asuriteID = asuriteID;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public void setSignupTimestamp(Instant signupTimestamp) { this.signupTimestamp = signupTimestamp; }
+    public Instant getSignupTimestamp() {
+        return signupTimestamp;
+    }
 
-    public void setAsuriteID(String asuriteID) {
-        this.asuriteID = asuriteID;
+    public void setSignupTimestamp(Instant signupTimestamp) {
+        this.signupTimestamp = signupTimestamp;
+    }
+
+    public List<Long> getProjectPreferences() {
+        return projectPreferences;
     }
 
     public void setProjectPreferences(List<Long> projectPreferences) {
         this.projectPreferences = projectPreferences;
+    }
+
+    public Long getAssignedProject() {
+        return assignedProject;
     }
 
     public void setAssignedProject(Long assignedProject) {
@@ -91,11 +107,12 @@ public class Student {
     public String toString() {
         return "Student{" +
                 "id=" + id +
-                ", asuriteID='" + asuriteID + '\'' +
+                ", studentID=" + studentID +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", asuriteID='" + asuriteID + '\'' +
                 ", email='" + email + '\'' +
-                ", signupTimestamp='" + signupTimestamp + '\'' +
+                ", signupTimestamp=" + signupTimestamp +
                 ", projectPreferences=" + projectPreferences +
                 ", assignedProject=" + assignedProject +
                 '}';

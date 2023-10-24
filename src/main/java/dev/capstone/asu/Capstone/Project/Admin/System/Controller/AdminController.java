@@ -1,6 +1,7 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
 import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
+import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiRequestError;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +51,9 @@ public class AdminController {
     }
 
     @PutMapping("/updateStudent/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable("id") Long id, @RequestBody Student student)
-    {
-        Optional<Student> foundStudent = adminService.updateStudent(id, student);
-        if (foundStudent.isEmpty()) throw new EntityNotFoundException("Student not found with id = " + id.toString());
-        return new ResponseEntity<>(foundStudent.get(), HttpStatus.CREATED);
+    public ResponseEntity<Student> updateStudent(@PathVariable("id") Long id, @RequestBody Student student) {
+        Student foundStudent = adminService.updateStudent(id, student);
+        return new ResponseEntity<>(foundStudent, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/deleteStudent/{id}")

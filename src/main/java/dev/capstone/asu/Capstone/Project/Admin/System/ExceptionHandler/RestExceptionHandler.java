@@ -8,10 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -30,6 +34,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     {
         AdminApiError aae = new AdminApiError(HttpStatus.NOT_FOUND);
         aae.setMessage(ex.getMessage());
+        return new ResponseEntity<>(aae, aae.getStatus());
+    }
+
+    @ExceptionHandler(InputMismatchException.class)
+    protected ResponseEntity<Object> handleInputMismatch(InputMismatchException ex)
+    {
+        AdminApiError aae = new AdminApiError(HttpStatus.PRECONDITION_FAILED, "Request body data mismatch", ex);
         return new ResponseEntity<>(aae, aae.getStatus());
     }
 
