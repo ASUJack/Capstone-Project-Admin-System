@@ -1,6 +1,7 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
 import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
+import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiError;
 import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiRequestError;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -138,6 +142,17 @@ public class AdminController {
     public ResponseEntity<?> clearAssignedProjects()
     {
         adminService.clearAssignedProjects();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //@RequestMapping(value = "/studentsCsv", method = RequestMethod.POST, consumes = "multipart/form-data")
+    @PostMapping("/studentsCsv")
+    public ResponseEntity<?> studentsCsv(@RequestParam("file") MultipartFile file) throws IOException
+    {
+        if (!adminService.hasCsvFormat(file))
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+
+        adminService.processStudentsCsv(file);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -4,11 +4,19 @@ import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
+
+import static org.apache.commons.codec.CharEncoding.UTF_8;
 
 @Service
 public class AdminService {
@@ -315,4 +323,41 @@ public class AdminService {
         projectRepo.saveAll(projects);
     }
 
+    public boolean hasCsvFormat(MultipartFile file) {
+        return "text/csv".equals(file.getContentType());
+    }
+
+    public void processStudentsCsv(MultipartFile file) throws IOException {
+        List<Student> students = this.csvToStudents(file.getInputStream());
+        studentRepo.saveAll(students);
+    }
+
+    private List<Student> csvToStudents(InputStream inputStream) throws IOException {
+        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        final CSVFormat format = CSVFormat.DEFAULT.builder()
+                .setDelimiter(',')
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .build();
+        CSVParser parser = new CSVParser(fileReader, format);
+        List<CSVRecord> records = parser.getRecords();
+        List<Student> students = new ArrayList<Student>();
+        for (CSVRecord record : records)
+        {
+            System.out.println(record.toList().toString());
+
+            Student student = new Student();
+            student.setStudentID(Long.parseLong(record.get(0)));
+            student.setFirstName(record.get(1));
+            student.setLastName(record.get(2));
+            student.setAsuriteID(record.get(3));
+            student.setEmail(record.get(4));
+            student.setSignupTimestamp(null);
+            student.setProjectPreferences(new ArrayList<Long>());
+            student.setAssignedProject(0L);
+            students.add(student);
+
+        }
+        return students;
+    }
 }
