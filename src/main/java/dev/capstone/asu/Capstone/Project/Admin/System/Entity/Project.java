@@ -166,11 +166,11 @@ public class Project {
         this.requiredAgreements = requiredAgreements;
     }
 
-    public List<String> getProjectLinks() {
+    public String getProjectLinks() {
         return projectLinks;
     }
 
-    public void setProjectLinks(List<String> projectLinks) {
+    public void setProjectLinks(String projectLinks) {
         this.projectLinks = projectLinks;
     }
 
@@ -212,11 +212,12 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(columnDefinition = "TEXT")
     private String title;
 
     private String timestamp;
 
+    @Column(columnDefinition = "TEXT")
     private String cohort;
 
     private String organizationClassification;
@@ -227,6 +228,7 @@ public class Project {
 
     private String dedicatedContact;
 
+    @Column(columnDefinition = "TEXT")
     private String proposerOrganization;
 
     private String proposerName;
@@ -257,7 +259,8 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String requiredAgreements;
 
-    private List<String> projectLinks;
+    @Column(columnDefinition = "TEXT")
+    private String projectLinks;
 
     private String coordinatorName;
 
@@ -288,7 +291,7 @@ public class Project {
                 ", projectFocus='" + projectFocus + '\'' +
                 ", maxTeamSize=" + maxTeamSize +
                 ", requiredAgreements='" + requiredAgreements + '\'' +
-                ", projectLinks=" + projectLinks +
+                ", projectLinks='" + projectLinks + '\'' +
                 ", coordinatorName='" + coordinatorName + '\'' +
                 ", coordinatorEmail='" + coordinatorEmail + '\'' +
                 ", assignedStudents=" + assignedStudents +

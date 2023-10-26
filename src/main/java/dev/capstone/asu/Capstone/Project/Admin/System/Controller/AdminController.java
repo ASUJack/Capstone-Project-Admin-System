@@ -13,8 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -147,13 +152,33 @@ public class AdminController {
 
     //@RequestMapping(value = "/studentsCsv", method = RequestMethod.POST, consumes = "multipart/form-data")
     @PostMapping("/studentsCsv")
-    public ResponseEntity<?> studentsCsv(@RequestParam("file") MultipartFile file) throws IOException
+    public ResponseEntity<ResponseMessage> studentsCsv(@RequestParam("file") MultipartFile file) throws IOException
     {
         if (!adminService.hasCsvFormat(file))
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").withZone(ZoneId.from(ZoneOffset.UTC));
+            ResponseMessage msg = new ResponseMessage(formatter.format(Instant.now()), "Uploaded file is not .csv");
+            return new ResponseEntity<>(msg, HttpStatus.EXPECTATION_FAILED);
+        }
 
         adminService.processStudentsCsv(file);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/projectsCsv")
+    public ResponseEntity<ResponseMessage> projectsCsv(@RequestParam("file") MultipartFile file)
+    {
+        if (!adminService.hasCsvFormat(file))
+        {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").withZone(ZoneId.from(ZoneOffset.UTC));
+            ResponseMessage msg = new ResponseMessage(formatter.format(Instant.now()), "Uploaded file is not .csv");
+            return new ResponseEntity<>(msg, HttpStatus.EXPECTATION_FAILED);
+        }
+
+        boolean success = adminService.processProjectsCsv(file);
+        if (success) return new ResponseEntity<>(HttpStatus.OK);
+        ResponseMessage msg = new ResponseMessage(Instant.now().toString(), "Unable to parse project records");
+        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

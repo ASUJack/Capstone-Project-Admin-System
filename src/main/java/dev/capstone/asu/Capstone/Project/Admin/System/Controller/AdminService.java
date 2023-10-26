@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static org.apache.commons.codec.CharEncoding.UTF_8;
 
 @Service
 public class AdminService {
@@ -332,16 +333,100 @@ public class AdminService {
         studentRepo.saveAll(students);
     }
 
-    private List<Student> csvToStudents(InputStream inputStream) throws IOException {
-        BufferedReader fileReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        final CSVFormat format = CSVFormat.DEFAULT.builder()
+    public boolean processProjectsCsv(MultipartFile file) {
+        List<Project> projects = null;
+        try
+        {
+            projects = this.csvToProjects(file.getInputStream());
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            System.out.println("Projects CSV file is not coded using UTF-8");
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Failed to retrieve input stream from projects CSV file");
+        }
+
+        if (Objects.isNull(projects)) return false;
+
+        projectRepo.saveAll(projects);
+        return true;
+    }
+
+    private List<CSVRecord> inputStreamToCsvRecords(InputStream stream,
+                                             Charset charset,
+                                             CSVFormat format)
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
+        CSVParser parser = null;
+        try
+        {
+            parser = new CSVParser(reader, format);
+        }
+        catch (IOException ex)
+        {
+            System.out.println("Error creating parser for .csv:");
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getLocalizedMessage());
+        }
+
+        if (Objects.isNull(parser)) return null;
+        return parser.getRecords();
+    }
+
+    private List<Project> csvToProjects(InputStream stream) {
+        CSVFormat format = CSVFormat.DEFAULT.builder()
                 .setDelimiter(',')
                 .setHeader()
                 .setSkipHeaderRecord(true)
                 .build();
-        CSVParser parser = new CSVParser(fileReader, format);
-        List<CSVRecord> records = parser.getRecords();
-        List<Student> students = new ArrayList<Student>();
+        List<CSVRecord> records = this.inputStreamToCsvRecords(stream, StandardCharsets.UTF_8, format);
+        if (Objects.isNull(records)) return null;
+        List<Project> projects = new ArrayList<>();
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("M/d/yyyy H:mm:ss", Locale.US)
+                        .withZone(ZoneId.from(ZoneOffset.UTC));
+        for (CSVRecord record : records)
+        {
+            Project project = new Project();
+
+            ZonedDateTime zdt = ZonedDateTime.parse(record.get(0), formatter);
+            Instant timestamp = zdt.toInstant();
+            project.setTimestamp(timestamp.toString());
+            project.setCohort(record.get(1));
+            project.setOrganizationClassification(record.get(2));
+            project.setIntellectualPropertyConcerns(record.get(3));
+            project.setProjectResourcesProvided(record.get(4));
+            project.setDedicatedContact(record.get(5));
+            project.setProposerOrganization(record.get(6));
+            project.setProposerName(record.get(7));
+            project.setProposerEmail(record.get(8));
+            project.setProjectContactName(record.get(9));
+            project.setProjectContactEmail(record.get(10));
+            project.setTitle(record.get(11));
+            project.setDescription(record.get(12));
+            project.setStudentLearningExperience(record.get(13));
+            project.setExpectedDeliverables(record.get(14));
+            project.setDesiredBackground(record.get(15));
+            project.setProjectFocus(record.get(16));
+            project.setMaxTeamSize(Integer.parseInt(record.get(17)));
+            project.setRequiredAgreements(record.get(18));
+            project.setProjectLinks(record.get(19));
+
+            projects.add(project);
+        }
+        return projects;
+    }
+
+    private List<Student> csvToStudents(InputStream inputStream) throws IOException {
+        CSVFormat format = CSVFormat.DEFAULT.builder()
+                .setDelimiter(',')
+                .setHeader()
+                .setSkipHeaderRecord(true)
+                .build();
+        List<CSVRecord> records = this.inputStreamToCsvRecords(inputStream, StandardCharsets.UTF_8, format);
+        List<Student> students = new ArrayList<>();
         for (CSVRecord record : records)
         {
             System.out.println(record.toList().toString());
