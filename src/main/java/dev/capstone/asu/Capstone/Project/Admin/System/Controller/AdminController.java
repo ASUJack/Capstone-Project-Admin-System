@@ -17,10 +17,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 public class AdminController {
@@ -71,6 +68,14 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping("/deleteAllStudents")
+    public ResponseEntity<ResponseMessage> deleteAllStudents()
+    {
+        adminService.deleteAllStudents();
+        ResponseMessage msg = ResponseMessage.build("All student data deleted from database");
+        return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+
 
     // =====================================================
     //  PROJECT METHODS
@@ -117,6 +122,14 @@ public class AdminController {
         adminService.deleteProject(id);
     }
 
+    @DeleteMapping("/deleteAllProjects")
+    public ResponseEntity<ResponseMessage> deleteAllProjects()
+    {
+        adminService.deleteAllProjects();
+        ResponseMessage msg = ResponseMessage.build("All project information deleted from database");
+        return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+
 
     // =====================================================
     //  SCRIPT METHODS
@@ -150,19 +163,22 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //@RequestMapping(value = "/studentsCsv", method = RequestMethod.POST, consumes = "multipart/form-data")
     @PostMapping("/studentsCsv")
     public ResponseEntity<ResponseMessage> studentsCsv(@RequestParam("file") MultipartFile file) throws IOException
     {
         if (!adminService.hasCsvFormat(file))
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").withZone(ZoneId.from(ZoneOffset.UTC));
-            ResponseMessage msg = new ResponseMessage(formatter.format(Instant.now()), "Uploaded file is not .csv");
+            ResponseMessage msg = ResponseMessage.build("Uploaded file is not .csv");
             return new ResponseEntity<>(msg, HttpStatus.EXPECTATION_FAILED);
         }
 
-        adminService.processStudentsCsv(file);
-        return new ResponseEntity<>(HttpStatus.OK);
+        ResponseMessage msg = adminService.processStudentsCsv(file);
+        if (Objects.isNull(msg.getEntity()))
+        {
+            return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
     @PostMapping("/projectsCsv")
@@ -170,15 +186,39 @@ public class AdminController {
     {
         if (!adminService.hasCsvFormat(file))
         {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").withZone(ZoneId.from(ZoneOffset.UTC));
-            ResponseMessage msg = new ResponseMessage(formatter.format(Instant.now()), "Uploaded file is not .csv");
+            ResponseMessage msg = ResponseMessage.build("Uploaded file is not .csv");
             return new ResponseEntity<>(msg, HttpStatus.EXPECTATION_FAILED);
         }
 
-        boolean success = adminService.processProjectsCsv(file);
-        if (success) return new ResponseEntity<>(HttpStatus.OK);
-        ResponseMessage msg = new ResponseMessage(Instant.now().toString(), "Unable to parse project records");
-        return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseMessage msg = adminService.processProjectsCsv(file);
+        if (Objects.isNull(msg.getEntity()))
+        {
+            return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+
+    @PutMapping("/randomProjectSignup")
+    public ResponseEntity<ResponseMessage> randomProjectSignup()
+    {
+        List<Student> students = adminService.randomProjectSignup();
+        if (Objects.isNull(students))
+        {
+            ResponseMessage msg = ResponseMessage.build("No projects assigned");
+            return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        ResponseMessage msg = ResponseMessage.build("Projects assigned", students);
+        return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+
+    @PutMapping("/clearProjectPreferences")
+    public ResponseEntity<ResponseMessage> clearProjectPreferences()
+    {
+        List<Student> students = adminService.clearProjectPreferences();
+        ResponseMessage msg = ResponseMessage.build("Project preferences cleared", students);
+        return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
 }

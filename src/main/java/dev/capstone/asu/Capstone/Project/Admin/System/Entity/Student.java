@@ -103,6 +103,16 @@ public class Student {
         this.assignedProject = assignedProject;
     }
 
+    public boolean addProjectPreference(Long projectId)
+    {
+        if (this.projectPreferences.contains(projectId) || this.projectPreferences.size() >= 10)
+        {
+            return false;
+        }
+        this.projectPreferences.add(projectId);
+        return true;
+    }
+
     @Override
     public String toString() {
         return "Student{" +

@@ -89,6 +89,11 @@ public class AdminService {
         studentRepo.deleteById(id);
     }
 
+    public void deleteAllStudents()
+    {
+        studentRepo.deleteAll();
+    }
+
 
     // =====================================================
     //  PROJECT METHODS
@@ -147,6 +152,11 @@ public class AdminService {
             }
         }
         projectRepo.deleteById(id);
+    }
+
+    public void deleteAllProjects()
+    {
+        projectRepo.deleteAll();
     }
 
 
@@ -328,12 +338,26 @@ public class AdminService {
         return "text/csv".equals(file.getContentType());
     }
 
-    public void processStudentsCsv(MultipartFile file) throws IOException {
-        List<Student> students = this.csvToStudents(file.getInputStream());
-        studentRepo.saveAll(students);
+    public ResponseMessage processStudentsCsv(MultipartFile file) throws IOException {
+        List<Student> students = null;
+        try
+        {
+            students = this.csvToStudents(file.getInputStream());
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            return ResponseMessage.build("Students .csv file is not coded using UTF-8");
+        }
+        catch (IOException ex)
+        {
+            return ResponseMessage.build("Failed to retrieve input stream from students .csv file");
+        }
+        if (Objects.isNull(students))
+            return ResponseMessage.build("Failed to parse students .csv file");
+        return ResponseMessage.build("Student information added to database", studentRepo.saveAll(students));
     }
 
-    public boolean processProjectsCsv(MultipartFile file) {
+    public ResponseMessage processProjectsCsv(MultipartFile file) {
         List<Project> projects = null;
         try
         {
@@ -341,22 +365,20 @@ public class AdminService {
         }
         catch (UnsupportedEncodingException ex)
         {
-            System.out.println("Projects CSV file is not coded using UTF-8");
+            return ResponseMessage.build("Projects .csv file is not coded using UTF-8");
         }
         catch (IOException ex)
         {
-            System.out.println("Failed to retrieve input stream from projects CSV file");
+            return ResponseMessage.build("Failed to retrieve input stream from projects .csv file");
         }
 
-        if (Objects.isNull(projects)) return false;
+        if (Objects.isNull(projects))
+            return ResponseMessage.build("Failed to parse projects .csv file");
 
-        projectRepo.saveAll(projects);
-        return true;
+        return ResponseMessage.build("Project information added to database", projectRepo.saveAll(projects));
     }
 
-    private List<CSVRecord> inputStreamToCsvRecords(InputStream stream,
-                                             Charset charset,
-                                             CSVFormat format)
+    private List<CSVRecord> inputStreamToCsvRecords(InputStream stream, Charset charset, CSVFormat format)
     {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
         CSVParser parser = null;
@@ -413,19 +435,25 @@ public class AdminService {
             project.setMaxTeamSize(Integer.parseInt(record.get(17)));
             project.setRequiredAgreements(record.get(18));
             project.setProjectLinks(record.get(19));
+            project.setCoordinatorName("");
+            project.setCoordinatorEmail("");
+            project.setAssignedStudents(new ArrayList<Long>());
 
             projects.add(project);
         }
         return projects;
     }
 
-    private List<Student> csvToStudents(InputStream inputStream) throws IOException {
+    private List<Student> csvToStudents(InputStream inputStream) {
         CSVFormat format = CSVFormat.DEFAULT.builder()
                 .setDelimiter(',')
                 .setHeader()
                 .setSkipHeaderRecord(true)
                 .build();
         List<CSVRecord> records = this.inputStreamToCsvRecords(inputStream, StandardCharsets.UTF_8, format);
+
+        if (Objects.isNull(records)) return null;
+
         List<Student> students = new ArrayList<>();
         for (CSVRecord record : records)
         {
@@ -445,4 +473,47 @@ public class AdminService {
         }
         return students;
     }
+
+    public List<Student> randomProjectSignup()
+    {
+        List<Project> projects = projectRepo.findAll();
+        List<Student> students = studentRepo.findAll();
+
+        if (projects.isEmpty() || students.isEmpty()) return null;
+
+        int pSize = projects.size();
+        int cap = 80;
+        int rand;
+        int proj;
+        Project temp;
+
+        for (Student student : students)
+        {
+            rand = (int)(Math.random() * 100);
+            if (rand > cap) continue;
+            while (student.getProjectPreferences().size() < 10)
+            {
+                proj = (int)(Math.random() * pSize);
+                temp = projects.get(proj);
+                student.addProjectPreference(temp.getId());
+            }
+            student.setSignupTimestamp(Instant.now());
+        }
+
+        return studentRepo.saveAll(students);
+    }
+
+    public List<Student> clearProjectPreferences()
+    {
+        List<Student> students = studentRepo.findAll();
+
+        for (Student student : students)
+        {
+            student.setProjectPreferences(new ArrayList<Long>());
+            student.setSignupTimestamp(null);
+        }
+
+        return studentRepo.saveAll(students);
+    }
+
 }
