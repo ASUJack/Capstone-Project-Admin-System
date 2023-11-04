@@ -76,6 +76,13 @@ public class AdminController {
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
 
+    @GetMapping("/studentLogin")
+    public ResponseEntity<Long> studentLogin(@RequestBody List<String> userCredentials)
+    {
+        Long id = adminService.studentLogin(userCredentials);
+        return new ResponseEntity<>(id, HttpStatus.OK);
+    }
+
 
     // =====================================================
     //  PROJECT METHODS

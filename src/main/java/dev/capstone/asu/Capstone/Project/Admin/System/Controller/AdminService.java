@@ -94,6 +94,31 @@ public class AdminService {
         studentRepo.deleteAll();
     }
 
+    public Long studentLogin(List<String> userCredentials)
+    {
+        Optional<Student> student;
+        student = studentRepo.findByASURite(userCredentials.get(0));
+
+        if(student.isPresent())
+        {
+            Student realStudent = student.get();
+
+            if(realStudent.getStudentID().toString().equals(userCredentials.get(1)))
+            {
+                return realStudent.getId();
+            }
+            else
+            {
+                throw new EntityNotFoundException("Student not found with credentials = " + userCredentials.toString());
+            }
+        }
+        else
+        {
+            throw new EntityNotFoundException("Student not found with credentials = " + userCredentials.toString());
+        }
+    }
+
+
 
     // =====================================================
     //  PROJECT METHODS
