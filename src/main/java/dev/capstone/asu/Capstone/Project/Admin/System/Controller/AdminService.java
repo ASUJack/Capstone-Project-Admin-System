@@ -1,6 +1,7 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.Controller;
 
 import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
+import dev.capstone.asu.Capstone.Project.Admin.System.Repository.AdminRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,11 +27,14 @@ public class AdminService {
 
     private final StudentRepo studentRepo;
 
+    private final AdminRepo adminRepo;
+
     @Autowired
-    public AdminService(ProjectRepo projectRepo, StudentRepo studentRepo)
+    public AdminService(ProjectRepo projectRepo, StudentRepo studentRepo, AdminRepo adminRepo)
     {
         this.projectRepo = projectRepo;
         this.studentRepo = studentRepo;
+        this.adminRepo = adminRepo;
     }
 
 
@@ -182,6 +186,70 @@ public class AdminService {
     public void deleteAllProjects()
     {
         projectRepo.deleteAll();
+    }
+
+
+
+    // =====================================================
+    //  ADMIN METHODS
+    // =====================================================
+
+    public Admin addAdmin(Admin admin)
+    {
+        return adminRepo.save(admin);
+    }
+
+    public List<Admin> findAllAdmin()
+    {
+        return adminRepo.findAll();
+    }
+
+    public Admin findAdminById(Long id)
+    {
+        Optional<Admin> foundAdmin = adminRepo.findById(id);
+        if (foundAdmin.isEmpty()) throw new EntityNotFoundException("Admin not found with id = " + id.toString());
+        return foundAdmin.get();
+    }
+
+    public Admin updateAdmin(Long id, Admin admin)
+    {
+        Admin foundAdmin = this.findAdminById(id);
+        if (!foundAdmin.getId().equals(admin.getId()))
+            throw new InputMismatchException("Path variable id = '"
+                    + id.toString()
+                    + "' does not match student object id = '"
+                    + admin.getId().toString()
+                    + "'");
+        return adminRepo.save(admin);
+    }
+
+    public void deleteAdmin(Long id)
+    {
+        adminRepo.deleteById(id);
+    }
+
+    public Long adminLogin(List<String> adminCredentials)
+    {
+        Optional<Admin> admin;
+        admin = adminRepo.findByEmail(adminCredentials.get(0));
+
+        if(admin.isPresent())
+        {
+            Admin realAdmin = admin.get();
+
+            if(realAdmin.getPassword().equals(adminCredentials.get(1)))
+            {
+                return realAdmin.getId();
+            }
+            else
+            {
+                throw new EntityNotFoundException("Admin not found with credentials = " + adminCredentials.toString());
+            }
+        }
+        else
+        {
+            throw new EntityNotFoundException("Admin not found with credentials = " + adminCredentials.toString());
+        }
     }
 
 

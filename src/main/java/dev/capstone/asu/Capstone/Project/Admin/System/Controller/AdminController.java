@@ -139,6 +139,51 @@ public class AdminController {
 
 
     // =====================================================
+    //  ADMIN METHODS
+    // =====================================================
+
+    @GetMapping("/allAdmins")
+    public ResponseEntity<List<Admin>> findAllAdmins()
+    {
+        List<Admin> admins = adminService.findAllAdmin();
+        return new ResponseEntity<>(admins, HttpStatus.OK);
+    }
+
+    @GetMapping("/findAdmin/{id}")
+    public ResponseEntity<Admin> getAdmin(@PathVariable("id") Long id)
+    {
+        Admin admin = adminService.findAdminById(id);
+        return new ResponseEntity<>(admin, HttpStatus.OK);
+    }
+
+    @PostMapping("/addAdmin")
+    public ResponseEntity<Admin> addAdmin(@RequestBody Admin admin)
+    {
+        Admin newAdmin = adminService.addAdmin(admin);
+        return new ResponseEntity<>(newAdmin, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/updateAdmin/{id}")
+    public ResponseEntity<Admin> updateAdmin(@PathVariable("id") Long id, @RequestBody Admin admin) {
+        Admin foundAdmin = adminService.updateAdmin(id, admin);
+        return new ResponseEntity<>(foundAdmin, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/deleteAdmin/{id}")
+    public ResponseEntity<?> deleteAdmin(@PathVariable("id") Long id)
+    {
+        adminService.deleteAdmin(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/adminLogin")
+    public ResponseEntity<Long> adminLogin(@RequestBody List<String> adminCredentials)
+    {
+        Long id = adminService.adminLogin(adminCredentials);
+        return new ResponseEntity<>(id, HttpStatus.OK);
+    }
+
+    // =====================================================
     //  SCRIPT METHODS
     // =====================================================
 
