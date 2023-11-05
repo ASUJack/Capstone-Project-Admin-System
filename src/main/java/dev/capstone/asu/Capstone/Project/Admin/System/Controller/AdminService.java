@@ -126,6 +126,11 @@ public class AdminService {
         }
     }
 
+    public List<Student> unassignedStudents()
+    {
+        return (List<Student>) studentRepo.findByUnassigned();
+    }
+
 
 
     // =====================================================
@@ -134,6 +139,11 @@ public class AdminService {
 
     public Project addProject(Project project)
     {
+        DateTimeFormatter formatter =
+                DateTimeFormatter
+                        .ofPattern("yyyy-MM-dd hh:mm:ss")
+                        .withZone(ZoneId.from(ZoneOffset.UTC));
+        project.setTimestamp(formatter.format(Instant.now()));
         return projectRepo.save(project);
     }
 

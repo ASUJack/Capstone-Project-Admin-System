@@ -84,6 +84,13 @@ public class AdminController {
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
+    @GetMapping("/unassignedStudents")
+    public ResponseEntity<List<Student>> unassignedStudents()
+    {
+        List<Student> students = adminService.unassignedStudents();
+        return new ResponseEntity<>(students, HttpStatus.OK);
+    }
+
 
     // =====================================================
     //  PROJECT METHODS
