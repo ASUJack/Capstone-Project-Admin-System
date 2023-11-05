@@ -217,7 +217,7 @@ public class AdminService {
         if (!foundAdmin.getId().equals(admin.getId()))
             throw new InputMismatchException("Path variable id = '"
                     + id.toString()
-                    + "' does not match student object id = '"
+                    + "' does not match admin object id = '"
                     + admin.getId().toString()
                     + "'");
         return adminRepo.save(admin);
