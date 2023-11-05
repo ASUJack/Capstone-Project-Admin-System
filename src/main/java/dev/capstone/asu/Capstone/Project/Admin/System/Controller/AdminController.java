@@ -5,6 +5,7 @@ import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiE
 import dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler.AdminApiRequestError;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.mail.EmailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -271,6 +272,13 @@ public class AdminController {
         List<Student> students = adminService.clearProjectPreferences();
         ResponseMessage msg = ResponseMessage.build("Project preferences cleared", students);
         return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+
+    @GetMapping("/sendEmail")
+    public ResponseEntity<?> sendEmail(@RequestBody List<String> emailParts) throws EmailException
+    {
+        adminService.sendEmail(emailParts);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

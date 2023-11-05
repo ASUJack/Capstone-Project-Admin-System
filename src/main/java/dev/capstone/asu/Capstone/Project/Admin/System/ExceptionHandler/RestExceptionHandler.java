@@ -1,6 +1,7 @@
 package dev.capstone.asu.Capstone.Project.Admin.System.ExceptionHandler;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.mail.EmailException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -59,4 +60,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(aae, aae.getStatus());
     }
 
+    @ExceptionHandler(EmailException.class)
+    protected ResponseEntity<Object> handleEmailException(EmailException ex)
+    {
+        AdminApiError aae = new AdminApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Email Failed to send.", ex);
+        return new ResponseEntity<>(aae, aae.getStatus());
+    }
 }

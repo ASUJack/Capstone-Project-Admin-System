@@ -8,6 +8,10 @@ import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.mail.DefaultAuthenticator;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -609,4 +613,24 @@ public class AdminService {
         return studentRepo.saveAll(students);
     }
 
+
+    public void sendEmail(List<String> emailParts) throws EmailException      //emailParts: [senderEmail, senderPassword, EmailSubject, EmailBody, receiverEmail1, ... ]
+    {
+        Email email = new SimpleEmail();
+        email.setHostName("smtp.gmail.com");
+        email.setSmtpPort(465);
+        email.setAuthenticator(new DefaultAuthenticator(emailParts.get(0), emailParts.get(1)));
+        email.setSSLOnConnect(true);
+        email.setFrom(emailParts.get(0));
+        email.setSubject(emailParts.get(2));
+        email.setMsg(emailParts.get(3));
+
+        for(int i = 4; i < emailParts.size(); i++)
+        {
+            email.addTo(emailParts.get(i));
+        }
+
+        email.send();
+
+    }
 }
