@@ -17,6 +17,6 @@ public interface StudentRepo extends JpaRepository<Student, Long>
     @Query(value = "SELECT * FROM Student s WHERE s.assigned_project = 0", nativeQuery = true)
     Collection<Student> findByUnassigned();
 
-    @Query(value = "SELECT * FROM Student s WHERE s.assigned_project = 1", nativeQuery = true)
-    Collection<Student> findByAssigned();
+    @Query(value = "SELECT * FROM Student s WHERE s.assigned_project = :projectid", nativeQuery = true)
+    Collection<Student> findByAssigned(@Param("projectid") Long projectid);
 }
