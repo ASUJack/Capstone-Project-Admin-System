@@ -174,6 +174,22 @@ public class Project {
         this.projectLinks = projectLinks;
     }
 
+    public String getSponsorName() { return sponsorName; }
+
+    public void setSponsorName(String sponsorName) { this.sponsorName = sponsorName; }
+
+    public String getSponsorEmail() { return sponsorEmail; }
+
+    public void setSponsorEmail(String sponsorEmail) { this.sponsorEmail = sponsorEmail; }
+
+    public List<String> getProposedTeamAsuriteIds() { return proposedTeamAsuriteIds; }
+
+    public void setProposedTeamAsuriteIds(List<String> proposedTeamAsuriteIds) { this.proposedTeamAsuriteIds = proposedTeamAsuriteIds; }
+
+    public List<String> getProposedTeamEmails() { return proposedTeamEmails; }
+
+    public void setProposedTeamEmails(List<String> proposedTeamEmails) { this.proposedTeamEmails = proposedTeamEmails; }
+
     public String getCoordinatorName() {
         return coordinatorName;
     }
@@ -262,6 +278,14 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String projectLinks;
 
+    private String sponsorName;
+
+    private String sponsorEmail;
+
+    private List<String> proposedTeamAsuriteIds;
+
+    private List<String> proposedTeamEmails;
+
     private String coordinatorName;
 
     private String coordinatorEmail;
@@ -292,6 +316,10 @@ public class Project {
                 ", maxTeamSize=" + maxTeamSize +
                 ", requiredAgreements='" + requiredAgreements + '\'' +
                 ", projectLinks='" + projectLinks + '\'' +
+                ", sponsorName='" + sponsorName + '\'' +
+                ", sponsorEmail='" + sponsorEmail + '\'' +
+                ", proposedTeamAsuriteIds=" + proposedTeamAsuriteIds +
+                ", proposedTeamEmails=" + proposedTeamEmails +
                 ", coordinatorName='" + coordinatorName + '\'' +
                 ", coordinatorEmail='" + coordinatorEmail + '\'' +
                 ", assignedStudents=" + assignedStudents +
