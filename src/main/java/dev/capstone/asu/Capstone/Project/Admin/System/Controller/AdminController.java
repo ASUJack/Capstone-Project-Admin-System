@@ -35,6 +35,7 @@ public class AdminController {
     //  STUDENT METHODS
     // =====================================================
 
+    @CrossOrigin
     @GetMapping("/allStudents")
     public ResponseEntity<List<Student>> findAllStudents()
     {
@@ -42,33 +43,34 @@ public class AdminController {
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/findStudent/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable("id") Long id)
     {
         Student student = adminService.findStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PostMapping("/addStudent")
     public ResponseEntity<Student> addStudent(@RequestBody Student student)
     {
         Student newStudent = adminService.addStudent(student);
         return new ResponseEntity<>(newStudent, HttpStatus.CREATED);
     }
-
+    @CrossOrigin
     @PutMapping("/updateStudent/{id}")
     public ResponseEntity<Student> updateStudent(@PathVariable("id") Long id, @RequestBody Student student) {
         Student foundStudent = adminService.updateStudent(id, student);
         return new ResponseEntity<>(foundStudent, HttpStatus.CREATED);
     }
-
+    @CrossOrigin
     @DeleteMapping("/deleteStudent/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable("id") Long id)
     {
         adminService.deleteStudent(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @CrossOrigin
     @DeleteMapping("/deleteAllStudents")
     public ResponseEntity<ResponseMessage> deleteAllStudents()
     {
@@ -76,14 +78,14 @@ public class AdminController {
         ResponseMessage msg = ResponseMessage.build("All student data deleted from database");
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/studentLogin")
     public ResponseEntity<Long> studentLogin(@RequestBody List<String> userCredentials)
     {
         Long id = adminService.studentLogin(userCredentials);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/unassignedStudents")
     public ResponseEntity<List<Student>> unassignedStudents()
     {
@@ -95,48 +97,48 @@ public class AdminController {
     // =====================================================
     //  PROJECT METHODS
     // =====================================================
-
+    @CrossOrigin
     @PostMapping("/addProject")
     public ResponseEntity<Project> addProject(@RequestBody Project project)
     {
         Project newProject = adminService.addProject(project);
         return new ResponseEntity<>(newProject, HttpStatus.CREATED);
     }
-
+    @CrossOrigin
     @GetMapping("/allProjects")
     public ResponseEntity<List<Project>> findAllProjects()
     {
         List<Project> projects = adminService.findAllProjects();
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/findProject/{id}")
     public ResponseEntity<Project> findProjectById(@PathVariable("id") Long id)
     {
         Project foundProject = adminService.findProjectById(id);
         return new ResponseEntity<>(foundProject, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/updateProject/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable("id") Long id, @RequestBody Project project)
     {
         Project foundProject = adminService.updateProject(id, project);
         return new ResponseEntity<>(foundProject, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/projectsByYear/{year}")
     public ResponseEntity<List<Project>> findProjectsByYear(@PathVariable("year") String year)
     {
         List<Project> projects = adminService.findProjectsByYear(year);
         return new ResponseEntity<>(projects, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @DeleteMapping("/deleteProject/{id}")
     public void deleteProject(@PathVariable("id") Long id)
     {
         adminService.deleteProject(id);
     }
-
+    @CrossOrigin
     @DeleteMapping("/deleteAllProjects")
     public ResponseEntity<ResponseMessage> deleteAllProjects()
     {
@@ -149,41 +151,41 @@ public class AdminController {
     // =====================================================
     //  ADMIN METHODS
     // =====================================================
-
+    @CrossOrigin
     @GetMapping("/allAdmins")
     public ResponseEntity<List<Admin>> findAllAdmins()
     {
         List<Admin> admins = adminService.findAllAdmin();
         return new ResponseEntity<>(admins, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/findAdmin/{id}")
     public ResponseEntity<Admin> getAdmin(@PathVariable("id") Long id)
     {
         Admin admin = adminService.findAdminById(id);
         return new ResponseEntity<>(admin, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PostMapping("/addAdmin")
     public ResponseEntity<Admin> addAdmin(@RequestBody Admin admin)
     {
         Admin newAdmin = adminService.addAdmin(admin);
         return new ResponseEntity<>(newAdmin, HttpStatus.CREATED);
     }
-
+    @CrossOrigin
     @PutMapping("/updateAdmin/{id}")
     public ResponseEntity<Admin> updateAdmin(@PathVariable("id") Long id, @RequestBody Admin admin) {
         Admin foundAdmin = adminService.updateAdmin(id, admin);
         return new ResponseEntity<>(foundAdmin, HttpStatus.CREATED);
     }
-
+    @CrossOrigin
     @DeleteMapping("/deleteAdmin/{id}")
     public ResponseEntity<?> deleteAdmin(@PathVariable("id") Long id)
     {
         adminService.deleteAdmin(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/adminLogin")
     public ResponseEntity<Long> adminLogin(@RequestBody List<String> adminCredentials)
     {
@@ -194,35 +196,35 @@ public class AdminController {
     // =====================================================
     //  SCRIPT METHODS
     // =====================================================
-
+    @CrossOrigin
     @GetMapping("/getEmails/{id}")
     public ResponseEntity<List<String>> getEmails(@PathVariable("id") Long id)
     {
         List<String> emails = adminService.getEmailsByProject(id);
         return new ResponseEntity<>(emails, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/projectSignup/{id}")
     public ResponseEntity<Student> projectSignup(@PathVariable("id") Long id, @RequestBody List<Long> projectIds)
     {
         Student foundStudent = adminService.projectSignup(id, projectIds);
         return new ResponseEntity<>(foundStudent, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/assignProjects")
     public ResponseEntity<?> assignProjects()
     {
         adminService.assignProjects();
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/clearAssignedProjects")
     public ResponseEntity<?> clearAssignedProjects()
     {
         adminService.clearAssignedProjects();
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PostMapping("/studentsCsv")
     public ResponseEntity<ResponseMessage> studentsCsv(@RequestParam("file") MultipartFile file) throws IOException
     {
@@ -240,7 +242,7 @@ public class AdminController {
 
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PostMapping("/projectsCsv")
     public ResponseEntity<ResponseMessage> projectsCsv(@RequestParam("file") MultipartFile file)
     {
@@ -258,7 +260,7 @@ public class AdminController {
 
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/randomProjectSignup")
     public ResponseEntity<ResponseMessage> randomProjectSignup()
     {
@@ -272,7 +274,7 @@ public class AdminController {
         ResponseMessage msg = ResponseMessage.build("Projects assigned", students);
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @PutMapping("/clearProjectPreferences")
     public ResponseEntity<ResponseMessage> clearProjectPreferences()
     {
@@ -280,7 +282,7 @@ public class AdminController {
         ResponseMessage msg = ResponseMessage.build("Project preferences cleared", students);
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
-
+    @CrossOrigin
     @GetMapping("/sendEmail")
     public ResponseEntity<?> sendEmail(@RequestBody List<String> emailParts) throws EmailException
     {
