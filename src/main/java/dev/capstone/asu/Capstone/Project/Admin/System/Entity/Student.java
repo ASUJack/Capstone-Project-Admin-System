@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -126,5 +127,12 @@ public class Student {
                 ", projectPreferences=" + projectPreferences +
                 ", assignedProject=" + assignedProject +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Student s)) return false;
+        return this.getId().equals(s.getId());
     }
 }

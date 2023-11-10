@@ -315,34 +315,55 @@ public class AdminService {
     public void assignProjects()
     {
         // Fetch and sort all student objects, fetch project objects
-        ArrayList<Student> allStudents = new ArrayList<>(this.findAllStudents());
-        allStudents.sort(new StudentTimestampComparator());
-        ArrayList<Project> allProjects = new ArrayList<>(this.findAllProjects());
+        ArrayList<Student> unassignedStudents = new ArrayList<>(studentRepo.findByUnassigned());
+        unassignedStudents.sort(new StudentTimestampComparator());
+        ArrayList<Project> assignableProjects = new ArrayList<>(projectRepo.findByAssignable());
 
         // Temporary storage
-        List<Student> unassignedStudents = new ArrayList<>();
         List<Student> assignedStudents = new ArrayList<>();
+        List<Student> noPreferenceStudents = new ArrayList<>();
         List<Project> fullProjects = new ArrayList<>();
+        List<Project> hasProposedTeam = new ArrayList<>();
+
+        for (Project project : assignableProjects)
+        {
+            if (!project.getProposedTeamAsuriteIds().isEmpty())
+            {
+                hasProposedTeam.add(project);
+            }
+        }
+
+        assignableProjects.removeAll(hasProposedTeam);
+
+        for (Project project : hasProposedTeam)
+        {
+            for (String asurite : project.getProposedTeamAsuriteIds())
+            {
+                Optional<Student> foundStudent = studentRepo.findByASURite(asurite);
+                if (foundStudent.isPresent() && foundStudent.get().getAssignedProject().equals(0L))
+                {
+                    Student student = foundStudent.get();
+                    project.addAssignedStudent(student.getId());
+                    student.setAssignedProject(project.getId());
+                    assignedStudents.add(student);
+                    unassignedStudents.remove(student);
+                }
+            }
+        }
 
         // Temporary variables
         Project tempProject;
         Student tempStudent;
 
-        // Print all sorted student objects to standard output
-        for (Student student : allStudents)
-        {
-            System.out.println("Student: " + student.toString());
-        }
-
         // Assign all students with a signup timestamp
-        while (!allStudents.isEmpty() && !allProjects.isEmpty())
+        while (!unassignedStudents.isEmpty() && !assignableProjects.isEmpty())
         {
             // If no signup timestamp, move to unassigned array
-            tempStudent = allStudents.get(0);
+            tempStudent = unassignedStudents.get(0);
             if (Objects.isNull(tempStudent.getSignupTimestamp()))
             {
-                unassignedStudents.add(tempStudent);
-                allStudents.remove(tempStudent);
+                noPreferenceStudents.add(tempStudent);
+                unassignedStudents.remove(tempStudent);
                 continue;
             }
 
@@ -350,7 +371,7 @@ public class AdminService {
             for (Long projectId : tempStudent.getProjectPreferences())
             {
                 tempProject = null;
-                for (Project p : allProjects)
+                for (Project p : assignableProjects)
                 {
                     if (projectId.equals(p.getId()))
                     {
@@ -364,62 +385,63 @@ public class AdminService {
                     tempProject.addAssignedStudent(tempStudent.getId());
                     tempStudent.setAssignedProject(projectId);
                     assignedStudents.add(tempStudent);
-                    allStudents.remove(tempStudent);
+                    unassignedStudents.remove(tempStudent);
                     if (tempProject.atCapacity())
                     {
                         fullProjects.add(tempProject);
-                        allProjects.remove(tempProject);
+                        assignableProjects.remove(tempProject);
                     }
                     break;
                 }
             }
 
             // If no preferred project available, move to unassigned array
-            if (allStudents.contains(tempStudent))
+            if (unassignedStudents.contains(tempStudent))
             {
-                unassignedStudents.add(tempStudent);
-                allStudents.remove(tempStudent);
+                noPreferenceStudents.add(tempStudent);
+                unassignedStudents.remove(tempStudent);
             }
         }
 
         // If there are no more available projects, move remaining students to unassigned array
-        unassignedStudents.addAll(allStudents);
+        noPreferenceStudents.addAll(unassignedStudents);
         System.out.println("After assigning students with timestamps:");
-        for (Student s : unassignedStudents)
+        for (Student s : noPreferenceStudents)
         {
             System.out.println("Unassigned Student: " + s.toString());
         }
-        allStudents.clear();
+        unassignedStudents.clear();
 
         // Assign all remaining students with no timestamp
         //  or with no available preferred projects
-        while (!unassignedStudents.isEmpty() && !allProjects.isEmpty())
+        while (!noPreferenceStudents.isEmpty() && !assignableProjects.isEmpty())
         {
-            tempStudent = unassignedStudents.get(0);
-            tempProject = allProjects.get(0);
+            tempStudent = noPreferenceStudents.get(0);
+            tempProject = assignableProjects.get(0);
 
             // Find first available project
             if (tempProject.atCapacity())
             {
                 fullProjects.add(tempProject);
-                allProjects.remove(tempProject);
+                assignableProjects.remove(tempProject);
                 continue;
             }
 
             tempProject.addAssignedStudent(tempStudent.getId());
             tempStudent.setAssignedProject(tempProject.getId());
             assignedStudents.add(tempStudent);
-            unassignedStudents.remove(tempStudent);
+            noPreferenceStudents.remove(tempStudent);
         }
 
         // Merge all temporary storage back into original arrays
-        allStudents.addAll(assignedStudents);
-        allStudents.addAll(unassignedStudents);
-        allProjects.addAll(fullProjects);
+        unassignedStudents.addAll(assignedStudents);
+        unassignedStudents.addAll(noPreferenceStudents);
+        assignableProjects.addAll(fullProjects);
+        assignableProjects.addAll(hasProposedTeam);
 
         // Write changes to database
-        studentRepo.saveAll(allStudents);
-        projectRepo.saveAll(allProjects);
+        studentRepo.saveAll(unassignedStudents);
+        projectRepo.saveAll(assignableProjects);
     }
 
     public void clearAssignedProjects()
