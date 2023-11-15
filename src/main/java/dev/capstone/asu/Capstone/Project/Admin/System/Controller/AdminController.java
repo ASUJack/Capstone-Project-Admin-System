@@ -79,9 +79,12 @@ public class AdminController {
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
     @CrossOrigin
-    @GetMapping("/studentLogin")
-    public ResponseEntity<Long> studentLogin(@RequestBody List<String> userCredentials)
+    @GetMapping("/studentLogin/{username}/{password}")
+    public ResponseEntity<Long> studentLogin(@PathVariable("username") String username, @PathVariable("password") String password)
     {
+        List<String> userCredentials = new ArrayList<>();
+        userCredentials.add(username);
+        userCredentials.add(password);
         Long id = adminService.studentLogin(userCredentials);
         return new ResponseEntity<>(id, HttpStatus.OK);
     }

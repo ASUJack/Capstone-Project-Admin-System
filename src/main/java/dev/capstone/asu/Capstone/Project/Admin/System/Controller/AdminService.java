@@ -651,7 +651,7 @@ public class AdminService {
         Email email = new SimpleEmail();
         email.setHostName("smtp.gmail.com");
         email.setSmtpPort(465);
-        email.setAuthenticator(new DefaultAuthenticator(emailParts.get(0), emailParts.get(1)));
+        email.setAuthenticator(new DefaultAuthenticator("ASU.CSE.CapstoneSystem.NoReply", emailParts.get(1)));
         email.setSSLOnConnect(true);
         email.setFrom(emailParts.get(0));
         email.setSubject(emailParts.get(2));
