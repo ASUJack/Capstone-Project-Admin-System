@@ -289,7 +289,7 @@ public class AdminController {
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
     @CrossOrigin
-    @GetMapping("/sendEmail")
+    @PutMapping("/sendEmail")
     public ResponseEntity<?> sendEmail(@RequestBody List<String> emailParts) throws EmailException
     {
         adminService.sendEmail(emailParts);
