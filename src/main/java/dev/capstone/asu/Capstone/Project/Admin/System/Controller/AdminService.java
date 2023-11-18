@@ -102,8 +102,9 @@ public class AdminService {
         studentRepo.deleteAll();
     }
 
-    public Long studentLogin(List<String> userCredentials)
+    public List<String> studentLogin(List<String> userCredentials)
     {
+        List<String> info = new ArrayList<>();
         Optional<Student> student;
         student = studentRepo.findByASURite(userCredentials.get(0));
 
@@ -113,7 +114,9 @@ public class AdminService {
 
             if(realStudent.getStudentID().toString().equals(userCredentials.get(1)))
             {
-                return realStudent.getId();
+                info.add(realStudent.getId().toString());
+                info.add(realStudent.getFirstName());
+                return info;
             }
             else
             {
@@ -242,9 +245,10 @@ public class AdminService {
         adminRepo.deleteById(id);
     }
 
-    public Long adminLogin(List<String> adminCredentials)
+    public List<String> adminLogin(List<String> adminCredentials)
     {
         Optional<Admin> admin;
+        List<String> info = new ArrayList<>();
         admin = adminRepo.findByEmail(adminCredentials.get(0));
 
         if(admin.isPresent())
@@ -253,7 +257,9 @@ public class AdminService {
 
             if(realAdmin.getPassword().equals(adminCredentials.get(1)))
             {
-                return realAdmin.getId();
+                info.add(realAdmin.getId().toString());
+                info.add(realAdmin.getFirstName());
+                return info;
             }
             else
             {
@@ -668,6 +674,7 @@ public class AdminService {
 
     public void sendProjectAssignments() throws EmailException
     {
-        //script for sending new project assignments out.
+        //script for sending new project assignment emails out.
+
     }
 }

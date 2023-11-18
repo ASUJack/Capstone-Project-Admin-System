@@ -80,13 +80,14 @@ public class AdminController {
     }
     @CrossOrigin
     @GetMapping("/studentLogin/{username}/{password}")
-    public ResponseEntity<Long> studentLogin(@PathVariable("username") String username, @PathVariable("password") String password)
+    public ResponseEntity<List<String>> studentLogin(@PathVariable("username") String username, @PathVariable("password") String password)
     {
+        List<String> returnInfo = new ArrayList<>();
         List<String> userCredentials = new ArrayList<>();
         userCredentials.add(username);
         userCredentials.add(password);
-        Long id = adminService.studentLogin(userCredentials);
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        returnInfo = adminService.studentLogin(userCredentials);
+        return new ResponseEntity<>(returnInfo, HttpStatus.OK);
     }
     @CrossOrigin
     @GetMapping("/unassignedStudents")
@@ -190,13 +191,14 @@ public class AdminController {
     }
     @CrossOrigin
     @GetMapping("/adminLogin/{username}/{password}")
-    public ResponseEntity<Long> adminLogin(@PathVariable("username") String username, @PathVariable("password") String password)
+    public ResponseEntity<List<String>> adminLogin(@PathVariable("username") String username, @PathVariable("password") String password)
     {
         List<String> adminCredentials = new ArrayList<>();
+        List<String> returnInfo = new ArrayList<>();
         adminCredentials.add(username);
         adminCredentials.add(password);
-        Long id = adminService.adminLogin(adminCredentials);
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        returnInfo = adminService.adminLogin(adminCredentials);
+        return new ResponseEntity<>(returnInfo, HttpStatus.OK);
     }
 
     // =====================================================
