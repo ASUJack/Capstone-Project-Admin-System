@@ -325,4 +325,11 @@ public class Project {
                 ", assignedStudents=" + assignedStudents +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Project p)) return false;
+        return this.getId().equals(p.getId());
+    }
 }
