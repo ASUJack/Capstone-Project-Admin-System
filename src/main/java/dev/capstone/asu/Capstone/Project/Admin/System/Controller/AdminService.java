@@ -452,9 +452,9 @@ public class AdminService {
         {
             for (int i = 0; i < onlyOne.size(); i += 2)
             {
-                tempStudent = studentAssignments.get(i + 1).get(0);
-                studentAssignments.get(i + 1).remove(tempStudent);
-                studentAssignments.get(i).add(tempStudent);
+                tempStudent = studentAssignments.get(onlyOne.get(i + 1)).get(0);
+                studentAssignments.get(onlyOne.get(i + 1)).remove(tempStudent);
+                studentAssignments.get(onlyOne.get(i)).add(tempStudent);
             }
         }
         if (onlyOne.size() == 1)
