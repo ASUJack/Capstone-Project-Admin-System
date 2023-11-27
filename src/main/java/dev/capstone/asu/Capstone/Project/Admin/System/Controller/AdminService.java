@@ -334,7 +334,8 @@ public class AdminService {
         for (int i = 0; i < assignableProjects.size(); ++i)
         {
             studentAssignments.add(new ArrayList<>());
-            if (!assignableProjects.get(i).getProposedTeamAsuriteIds().isEmpty())
+            List<String> asuriteIds = assignableProjects.get(i).getProposedTeamAsuriteIds();
+            if (!Objects.isNull(asuriteIds) && !asuriteIds.isEmpty())
             {
                 hasProposedTeam.add(i);
             }
