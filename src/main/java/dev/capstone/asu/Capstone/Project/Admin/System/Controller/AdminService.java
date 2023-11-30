@@ -4,6 +4,7 @@ import dev.capstone.asu.Capstone.Project.Admin.System.Entity.*;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.AdminRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectRepo;
 import dev.capstone.asu.Capstone.Project.Admin.System.Repository.StudentRepo;
+import dev.capstone.asu.Capstone.Project.Admin.System.Repository.ProjectAssignmentsToSendRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -33,12 +34,15 @@ public class AdminService {
 
     private final AdminRepo adminRepo;
 
+    private final ProjectAssignmentsToSendRepo projectAssignmentsToSendRepo;
+
     @Autowired
-    public AdminService(ProjectRepo projectRepo, StudentRepo studentRepo, AdminRepo adminRepo)
+    public AdminService(ProjectRepo projectRepo, StudentRepo studentRepo, AdminRepo adminRepo, ProjectAssignmentsToSendRepo projectAssignmentsToSendRepo)
     {
         this.projectRepo = projectRepo;
         this.studentRepo = studentRepo;
         this.adminRepo = adminRepo;
+        this.projectAssignmentsToSendRepo = projectAssignmentsToSendRepo;
     }
 
 
@@ -482,11 +486,31 @@ public class AdminService {
             }
         }
 
+
+        //Make sure we have a valid ProjectAssignmentsToSendRepo entity to save IDs.
+        List<ProjectAssignmentsToSend> assignmentsToSendList = projectAssignmentsToSendRepo.findAll();
+        ProjectAssignmentsToSend assignmentList;
+
+        if(assignmentsToSendList.isEmpty())
+        {
+            ProjectAssignmentsToSend assignmentsToSend = new ProjectAssignmentsToSend();
+            List<Long> listOfAssignments = new ArrayList<Long>();
+            assignmentsToSend.setNewlyAssignedProjects(listOfAssignments);
+            projectAssignmentsToSendRepo.save(assignmentsToSend);
+        }
+
+        assignmentsToSendList = projectAssignmentsToSendRepo.findAll();
+        assignmentList = assignmentsToSendList.get(0);
+
+
         // Update Project & Student objects with assignments
         for (int i = 0; i < assignableProjects.size(); ++i)
         {
             tempProject = assignableProjects.get(i);
             ArrayList<Student> list = studentAssignments.get(i);
+
+            //Add Project ID to the projectAssignmentsToSend Object.
+            assignmentList.getNewlyAssignedProjects().add(tempProject.getId());
 
             for (Student student : list)
             {
@@ -502,6 +526,7 @@ public class AdminService {
         // Write changes to database
         studentRepo.saveAll(unassignedStudents);
         projectRepo.saveAll(assignableProjects);
+        projectAssignmentsToSendRepo.save(assignmentList);
     }
 
     public void clearAssignedProjects()
@@ -726,9 +751,64 @@ public class AdminService {
 
     }
 
-    public void sendProjectAssignments() throws EmailException
+    public void sendProjectAssignments(List<String> accountCredentials) throws EmailException       //accountCredentials: [senderEmail, senderPassword]
     {
-        //script for sending new project assignment emails out.
+        List<ProjectAssignmentsToSend> assignmentsToSendList = projectAssignmentsToSendRepo.findAll();
 
+        if (!assignmentsToSendList.isEmpty()) {
+            ProjectAssignmentsToSend assignmentList = assignmentsToSendList.get(0);
+            String body = "";
+            String subject = "[Ignore] [Back-end Testing] Capstone Project Team Assignments";
+
+            for (Long id : assignmentList.getNewlyAssignedProjects()) {
+                Optional<Project> check = projectRepo.findById(id);
+                Project project;
+                List<String> associatedEmails = new ArrayList<String>();
+
+                if (check.isPresent()) {
+                    project = check.get();
+                    List<String> teamEmails = new ArrayList<String>();
+                    List<String> teamNames = new ArrayList<String>();
+                    associatedEmails = this.getEmailsByProject(project.getId());
+
+                    for (Long studentID : project.getAssignedStudents()) {
+                        Optional<Student> checkStudent = studentRepo.findById(studentID);
+                        if (checkStudent.isPresent()) {
+                            String studentName = checkStudent.get().getFirstName() + " " + checkStudent.get().getLastName();
+                            String studentEmail = checkStudent.get().getEmail();
+                            teamNames.add(studentName);
+                            teamEmails.add(studentEmail);
+                        }
+                    }
+
+                    body = "I am pleased to inform you that your project '" + project.getTitle() + "' was selected as a capstone project this semester!";
+                    body += "\nSponsor Email: " + project.getSponsorEmail();
+                    body += "\nTeam Member Names: \n" + teamNames.toString();
+                    body += "\n\nTeam Member Emails: \n" + teamEmails.toString();
+                    body += "\n\n Students and sponsors should review the Capstone kickoff information here: https://sites.google.com/asu.edu/cidse-capstone/kickoff ";
+                    body += "\n\n Students teams are expected to send an initial contact request to the sponsor.  Only one student from each team should initially contact the sponsor, so please coordinate within your team.";
+                    body += "\n\nPlease let me know if you have any questions!\n\nThank you, \n-Ryan Meuth\n\n Associate Teaching Professor, Capstone Project Coordinator\nArizona State University.\n";
+
+                    List<String> emailParts = new ArrayList<String>();
+
+                    emailParts.add(accountCredentials.get(0));
+                    emailParts.add(accountCredentials.get(1));
+                    emailParts.add(subject);
+                    emailParts.add(body);
+
+                    for(String email : associatedEmails)
+                    {
+                        if(!email.isEmpty())
+                        {
+                            emailParts.add(email);
+                        }
+                    }
+
+                    this.sendEmail(emailParts);
+                }
+            }
+        }
+
+        return;
     }
 }

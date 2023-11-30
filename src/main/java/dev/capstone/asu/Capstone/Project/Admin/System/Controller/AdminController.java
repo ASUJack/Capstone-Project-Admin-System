@@ -298,4 +298,12 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @CrossOrigin
+    @PutMapping("/sendProjectAssignments")
+    public ResponseEntity<?> sendProjectAssignments(@RequestBody List<String> emailCredentials) throws EmailException
+    {
+        adminService.sendProjectAssignments(emailCredentials);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
