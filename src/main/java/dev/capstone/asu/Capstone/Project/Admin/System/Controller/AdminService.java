@@ -805,6 +805,7 @@ public class AdminService {
                     }
 
                     this.sendEmail(emailParts);
+                    assignmentList.getNewlyAssignedProjects().remove(id);
                 }
             }
         }
