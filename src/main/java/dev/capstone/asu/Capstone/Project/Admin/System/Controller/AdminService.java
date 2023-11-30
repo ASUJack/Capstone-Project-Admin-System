@@ -805,9 +805,12 @@ public class AdminService {
                     }
 
                     this.sendEmail(emailParts);
-                    assignmentList.getNewlyAssignedProjects().remove(id);
+
                 }
             }
+
+            List<Long> empty = new ArrayList<Long>();
+            assignmentList.setNewlyAssignedProjects(empty);
         }
 
         return;
